@@ -1,0 +1,34 @@
+{
+  "name": "fuego-backend",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "compile": "tsc",
+    "start": "npm run compile && node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "tbecks",
+  "license": "ISC",
+  "volta": {
+    "npm": "8.19.2",
+    "node": "16.18.0"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.0.3",
+    "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
+    "pg": "^8.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.0",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "eslint": "^8.26.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "^2.7.1",
+    "typescript": "^4.8.4"
+  }
+}
