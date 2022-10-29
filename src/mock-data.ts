@@ -778,7 +778,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Una Pizza Napoletana',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -869,7 +870,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Mariscos El Submarino',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -892,7 +894,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Taqueria Ramirez',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -1092,7 +1095,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Mena',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
       {
@@ -1115,7 +1119,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Charles Pan-Fried Chicken',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
       {
@@ -1138,7 +1143,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Dept. Of Culture',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
       {
@@ -1161,7 +1167,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: "Bonnie's",
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
       {
@@ -1184,7 +1191,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Ci Siamo',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
       {
@@ -1207,7 +1215,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Semma',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
       {
@@ -4288,7 +4297,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: "L'Abeille",
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4304,7 +4314,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Nudibranch',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4320,7 +4331,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Place des Fetes',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4336,7 +4348,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Eyval',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4352,7 +4365,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Wenwen',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4368,7 +4382,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Gem Wine',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4384,7 +4399,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Bar Tulix',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4400,7 +4416,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'LittleMad',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4416,7 +4433,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Rowdy Rooster',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4432,7 +4450,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Matsunori',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4448,7 +4467,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'El Quijote',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4464,7 +4484,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Island Shack',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4480,7 +4501,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Lore',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4496,7 +4518,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Mari',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4512,7 +4535,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Banchan by Sunny',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4528,7 +4552,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Commerce Inn',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4544,7 +4569,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: "Edith's Eatery & Grocery",
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4560,7 +4586,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: "Ha's Đặc Biệt",
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4576,7 +4603,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Joomak Banjum',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4592,7 +4620,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Chocobar Cortés',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4608,7 +4637,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Comodo',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4624,7 +4654,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: "Agi's Counter",
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4640,7 +4671,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: '8282',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4656,7 +4688,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Gouie',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4672,7 +4705,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Hawksmoor NYC',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4688,7 +4722,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'One White Street',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4704,7 +4739,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Lodi',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
@@ -4720,7 +4756,8 @@ const newYorkRestaurants = [
         domain: 'theinfatuation',
         name: 'Sushi On Me',
         site_name: 'The Infatuation',
-        title: 'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
+        title:
+          'The NYC Hit List: The Best New Restaurants In NYC - New York - The Infatuation',
         url: 'https://www.theinfatuation.com/new-york/guides/best-new-new-york-restaurants-hit-list',
       },
     ],
