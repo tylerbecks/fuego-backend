@@ -1,3 +1,5 @@
+import { Context } from './context';
+
 const typeDefs = `#graphql
   type Query {
     restaurants(
@@ -47,5 +49,36 @@ const typeDefs = `#graphql
     TIMEOUT
   }
 `;
+
+export const resolvers = {
+  Query: {
+    restaurants: (_parent, _args: {}, context: Context) => {
+      return context.prisma.restaurants.findMany();
+    },
+    articlesByCity: (_parent, args: { city: string }, context: Context) => {
+      return context.prisma.articles.findUnique({
+        where: { city: args.city || undefined },
+      });
+    },
+    articlesByRestaurant: (
+      _parent,
+      args: { restaurantId: number },
+      context: Context
+    ) => {
+      return context.prisma.articles.findUnique({
+        where: { id: args.restaurantId || undefined },
+      });
+    },
+    awardsByRestaurant: (
+      _parent,
+      args: { restaurantId: number },
+      context: Context
+    ) => {
+      return context.prisma.articles.findUnique({
+        where: { id: args.restaurantId || undefined },
+      });
+    },
+  },
+};
 
 export default typeDefs;

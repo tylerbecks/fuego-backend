@@ -1,13 +1,8 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { context } from './context.js';
 import typeDefs from './schema.js';
-import mockData from './mock-data.js';
-
-const resolvers = {
-  Query: {
-    restaurants: () => mockData,
-  },
-};
+import { resolvers } from './schema.js';
 
 const server = new ApolloServer({
   typeDefs,
@@ -16,6 +11,7 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: 4000 },
+  context,
 });
 
 console.log(`🚀  Server ready at: ${url}`);

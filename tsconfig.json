@@ -2,7 +2,9 @@
   "compilerOptions": {
     "rootDirs": ["src"],
     "outDir": "dist",
-    "lib": ["es2020"],
+    "lib": ["esnext"],
+    "sourceMap": true,
+    "strict": true,
     "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",

@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model articles {
+  id            Int                    @id @default(autoincrement())
+  createdAt     DateTime?              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?              @map("updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime?              @map("deleted_at") @db.Timestamptz(6)
+  url           String                 @unique(map: "unique_url") @db.VarChar
+  title         String                 @db.VarChar
+  articleSource String                 @map("article_source") @db.VarChar
+  restaurants   articles_restaurants[]
+}
+
+model articles_restaurants {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime?   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime?   @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime?   @map("deleted_at") @db.Timestamptz(6)
+  articleId    Int         @map("article_id")
+  restaurantId Int         @map("restaurant_id")
+  articles     articles    @relation(fields: [articleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  restaurants  restaurants @relation(fields: [restaurantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model awards {
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime?   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime?   @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime?   @map("deleted_at") @db.Timestamptz(6)
+  restaurantId Int         @map("restaurant_id")
+  awardSource  String      @map("award_source") @db.VarChar
+  awardType    String      @map("award_type") @db.VarChar
+  year         Int
+  url          String      @db.VarChar
+  chef         String?     @db.VarChar
+  restaurants  restaurants @relation(fields: [restaurantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model cities {
+  city        String        @id @unique(map: "unique_city") @db.VarChar
+  state       String?       @db.VarChar
+  country     String?       @db.VarChar
+  restaurants restaurants[]
+}
+
+model restaurants {
+  id        Int                    @id @default(autoincrement())
+  createdAt DateTime?              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?              @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime?              @map("deleted_at") @db.Timestamptz(6)
+  name      String                 @db.VarChar
+  city      String                 @db.VarChar
+  gPlaceId  String?                @map("g_place_id") @db.VarChar
+  cities    cities                 @relation(fields: [city], references: [city], onDelete: NoAction, onUpdate: NoAction)
+  articles  articles_restaurants[]
+  awards    awards[]
+}
