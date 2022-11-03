@@ -8,17 +8,17 @@ datasource db {
 }
 
 model articles {
-  id            Int                    @id @default(autoincrement())
-  createdAt     DateTime?              @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime?              @map("updated_at") @db.Timestamptz(6)
-  deletedAt     DateTime?              @map("deleted_at") @db.Timestamptz(6)
-  url           String                 @unique(map: "unique_url") @db.VarChar
-  title         String                 @db.VarChar
-  articleSource String                 @map("article_source") @db.VarChar
-  restaurants   articles_restaurants[]
+  id            Int                   @id @default(autoincrement())
+  createdAt     DateTime?             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime?             @map("updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime?             @map("deleted_at") @db.Timestamptz(6)
+  url           String                @unique(map: "unique_url") @db.VarChar
+  title         String                @db.VarChar
+  articleSource String                @map("article_source") @db.VarChar
+  restaurants   articlesRestaurants[]
 }
 
-model articles_restaurants {
+model articlesRestaurants {
   id           Int         @id @default(autoincrement())
   createdAt    DateTime?   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime?   @map("updated_at") @db.Timestamptz(6)
@@ -27,6 +27,8 @@ model articles_restaurants {
   restaurantId Int         @map("restaurant_id")
   articles     articles    @relation(fields: [articleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   restaurants  restaurants @relation(fields: [restaurantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("articles_restaurants")
 }
 
 model awards {
@@ -51,14 +53,14 @@ model cities {
 }
 
 model restaurants {
-  id        Int                    @id @default(autoincrement())
-  createdAt DateTime?              @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime?              @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime?              @map("deleted_at") @db.Timestamptz(6)
-  name      String                 @db.VarChar
-  city      String                 @db.VarChar
-  gPlaceId  String?                @map("g_place_id") @db.VarChar
-  cities    cities                 @relation(fields: [city], references: [city], onDelete: NoAction, onUpdate: NoAction)
-  articles  articles_restaurants[]
+  id        Int                   @id @default(autoincrement())
+  createdAt DateTime?             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime?             @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime?             @map("deleted_at") @db.Timestamptz(6)
+  name      String                @db.VarChar
+  city      String                @db.VarChar
+  gPlaceId  String?               @map("g_place_id") @db.VarChar
+  cities    cities                @relation(fields: [city], references: [city], onDelete: NoAction, onUpdate: NoAction)
+  articles  articlesRestaurants[]
   awards    awards[]
 }
