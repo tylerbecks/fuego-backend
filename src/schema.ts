@@ -6,9 +6,10 @@ const typeDefs = `#graphql
       """
       The city to filter the restaurants by
       """
-      city: String
+      cityId: Int!
     ): [Restaurant]!
     restaurantById(id: Int!): Restaurant
+    articlesByCity(cityId: Int!): [Article]!
     articlesByRestaurant(restaurantId: Int!): [Article]!
     awardsByRestaurant(restaurantId: Int!): [Award]!
   }
@@ -62,11 +63,11 @@ export const resolvers = {
     },
     restaurantsByCity: async (
       _parent: undefined,
-      args: { city: string },
+      args: { cityId: number },
       context: Context
     ) => {
       const restaurants = await context.prisma.restaurant.findMany({
-        where: { city: args.city },
+        where: { cityId: args.cityId },
         include: {
           awards: true,
           articles: {
@@ -82,15 +83,15 @@ export const resolvers = {
         articles: restaurant?.articles.map(({ articles }) => articles),
       }));
     },
-    // articlesByCity: async (
-    //   _parent: undefined,
-    //   args: { city: string },
-    //   context: Context
-    // ) => {
-    //   return await context.prisma.articles.findUnique({
-    //     where: { city: args.city },
-    //   });
-    // },
+    articlesByCity: async (
+      _parent: undefined,
+      args: { cityId: number },
+      context: Context
+    ) => {
+      return await context.prisma.article.findMany({
+        where: { cityId: args.cityId },
+      });
+    },
     articlesByRestaurant: async (
       _parent: undefined,
       args: { restaurantId: number },
