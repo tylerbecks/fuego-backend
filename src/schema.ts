@@ -17,90 +17,107 @@ const typeDefs = `#graphql
     id: Int!
     articles: [Article]!
     awards: [Award]!
-    g_place_id: String
+    gPlaceId: String
     name: String!
   }
 
   type Award {
     id: Int!
-    source: AwardSource!
+    source: String!
     type: String!
     url: String!
   }
 
   type Article {
     id: Int!
-    source: ArticleSource!
+    source: String!
     title: String!
     url: String!
-  }
-
-  enum AwardSource {
-    FIFTY_BEST
-    JAMES_BEARD
-    MICHELIN
-  }
-
-  enum ArticleSource {
-    CONDE_NAST
-    CULTURE_TRIP
-    EATER
-    INFATUATION
-    STATESMAN
-    THRILLIST
-    TIMEOUT
   }
 `;
 
 export const resolvers = {
   Query: {
-    restaurantById: (
+    restaurantById: async (
       _parent: undefined,
       args: { id: number },
       context: Context
     ) => {
-      return context.prisma.restaurants.findUnique({
+      const restaurant = await context.prisma.restaurant.findUnique({
         where: { id: args.id },
+        include: {
+          awards: true,
+          articles: {
+            select: {
+              articles: true,
+            },
+          },
+        },
       });
+
+      return {
+        ...restaurant,
+        articles: restaurant?.articles.map(({ articles }) => articles),
+      };
     },
-    restaurantsByCity: (
+    restaurantsByCity: async (
       _parent: undefined,
       args: { city: string },
       context: Context
     ) => {
-      return context.prisma.restaurants.findMany({
+      const restaurants = await context.prisma.restaurant.findMany({
         where: { city: args.city },
         include: {
           awards: true,
-          articles: true,
+          articles: {
+            select: {
+              articles: true,
+            },
+          },
         },
       });
+
+      return restaurants.map((restaurant) => ({
+        ...restaurant,
+        articles: restaurant?.articles.map(({ articles }) => articles),
+      }));
     },
-    // articlesByCity: (
+    // articlesByCity: async (
     //   _parent: undefined,
     //   args: { city: string },
     //   context: Context
     // ) => {
-    //   return context.prisma.articles.findUnique({
+    //   return await context.prisma.articles.findUnique({
     //     where: { city: args.city },
     //   });
     // },
-    articlesByRestaurant: (
+    articlesByRestaurant: async (
       _parent: undefined,
       args: { restaurantId: number },
       context: Context
     ) => {
-      return context.prisma.articlesRestaurants;
-      return context.prisma.articles.findMany({
-        where: { id: args.restaurantId },
+      const articlesRestaurantsRows =
+        await context.prisma.articlesToRestaurants.findMany({
+          where: { restaurantId: args.restaurantId },
+          select: {
+            articleId: true,
+          },
+        });
+
+      const articleIds = articlesRestaurantsRows.map(
+        ({ articleId }) => articleId
+      );
+
+      return await context.prisma.article.findMany({
+        where: { id: { in: articleIds } },
       });
     },
-    awardsByRestaurant: (
+    awardsByRestaurant: async (
       _parent: undefined,
       args: { restaurantId: number },
       context: Context
     ) => {
-      return context.prisma.awards.findMany({
+      return await context.prisma.award.findMany({
         where: { restaurantId: args.restaurantId },
       });
     },
