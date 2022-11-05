@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && node ./dist/server.js",
+    "start:prod": "npm install && npm run compile && node ./dist/server.js",
     "prepare": "husky install"
   },
   "keywords": [],
