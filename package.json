@@ -21,6 +21,7 @@
     "@prisma/client": "^4.5.0",
     "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
+    "husky": "^8.0.1",
     "pg": "^8.8.0"
   },
   "devDependencies": {
@@ -32,7 +33,6 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.3.0",
     "eslint-plugin-promise": "^6.1.1",
-    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "prisma": "^4.5.0",
