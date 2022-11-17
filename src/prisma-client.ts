@@ -27,10 +27,4 @@ prisma.$on('query', (e) => {
   console.log('Duration: ' + e.duration + 'ms');
 });
 
-export interface Context {
-  prisma: PrismaClient;
-}
-
-export const context: Context = {
-  prisma,
-};
+export default prisma;
