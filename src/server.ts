@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import prisma from './prisma-client.js';
 
-const port = process.env.port || 3001;
+const port = process.env.PORT || 3001;
 
 const app = express();
 app.use(cors());
