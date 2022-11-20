@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import prisma from './prisma-client.js';
 
-const PORT = 3001;
+const port = process.env.port || 3001;
 
 const app = express();
 app.use(cors());
@@ -129,6 +129,6 @@ app.get('/restaurant/:restaurantId/awards', async (req, res) => {
   res.json(awards);
 });
 
-app.listen(PORT, () =>
-  console.log(`🚀 Server ready at: http://localhost:${PORT}`)
+app.listen(port, () =>
+  console.log(`🚀 Server ready at: http://localhost:${port}`)
 );
