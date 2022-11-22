@@ -29,8 +29,13 @@ const article = {
   url: true,
 };
 
-app.get('/city/:cityId/restaurants', async (req, res) => {
-  const { cityId } = req.params;
+app.get('/city/:city/restaurants', async (req, res) => {
+  let { city } = req.params;
+  city = city.replace('-', ' ');
+  const { id: cityId } = await prisma.city.findFirstOrThrow({
+    where: { city },
+    select: { id: true },
+  });
 
   const restaurantsRaw = await prisma.restaurant.findMany({
     where: { cityId: Number(cityId) },
@@ -68,11 +73,11 @@ app.get('/city/:cityId/articles', async (req, res) => {
   res.json(articles);
 });
 
-app.get('/restaurant/:id', async (req, res) => {
-  const { id } = req.params;
+app.get('/restaurant/:restaurantId', async (req, res) => {
+  const { restaurantId } = req.params;
 
   const restaurantRaw = await prisma.restaurant.findUnique({
-    where: { id: Number(id) },
+    where: { id: Number(restaurantId) },
     select: {
       id: true,
       name: true,
