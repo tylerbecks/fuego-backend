@@ -19,6 +19,7 @@ const award = {
   type: true,
   year: true,
   url: true,
+  chef: true,
 };
 
 const article = {
