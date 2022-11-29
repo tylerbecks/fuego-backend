@@ -46,7 +46,7 @@ model City {
   articles    Article[]    @relation("articlesTocities")
   restaurants Restaurant[] @relation("citiesTorestaurants")
 
-  @@unique([city, state, country], map: "unique_city")
+  @@unique([city, state, country])
   @@map("cities")
 }
 
@@ -71,7 +71,7 @@ model ArticlesToRestaurants {
   deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
   articleId    Int        @map("article_id")
   restaurantId Int        @map("restaurant_id")
-  id           Int        @id @default(dbgenerated("nextval('_articlestorestaurants_id_seq'::regclass)"))
+  id           Int        @id @default(autoincrement())
   articles     Article    @relation("articlestorestaurantsToarticles", fields: [articleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "articles_restaurants_article_id_fkey")
   restaurants  Restaurant @relation("articlestorestaurantsTorestaurants", fields: [restaurantId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "articles_restaurants_restaurant_id_fkey")
 
