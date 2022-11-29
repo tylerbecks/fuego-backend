@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import prisma from './prisma-client.js';
+import { sortRestaurantsByScore } from './sort-restaurant.js';
+import { getRestaurantById, getRestaurantsByCityId } from './resolver.js';
 
 const port = process.env.PORT || 3001;
 
@@ -13,22 +15,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const award = {
-  id: true,
-  source: true,
-  type: true,
-  year: true,
-  url: true,
-  chef: true,
-};
-
-const article = {
-  id: true,
-  title: true,
-  source: true,
-  url: true,
-};
-
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
   city = city.replace('-', ' ');
@@ -39,31 +25,10 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       select: { id: true },
     });
 
-    const restaurantsRaw = await prisma.restaurant.findMany({
-      where: { cityId: Number(cityId) },
-      select: {
-        id: true,
-        name: true,
-        gPlaceId: true,
-        awards: {
-          select: award,
-        },
-        articles: {
-          select: {
-            articles: {
-              select: article,
-            },
-          },
-        },
-      },
-    });
+    const restaurants = await getRestaurantsByCityId(cityId);
+    const sortedRestaurants = sortRestaurantsByScore(restaurants);
 
-    const restaurants = restaurantsRaw.map((restaurant) => ({
-      ...restaurant,
-      articles: restaurant?.articles.map(({ articles }) => articles),
-    }));
-
-    res.json(restaurants);
+    res.json(sortedRestaurants);
   } catch (error) {
     next(error);
   }
@@ -87,71 +52,9 @@ app.get('/restaurant/:restaurantId', async (req, res, next) => {
   const { restaurantId } = req.params;
 
   try {
-    const restaurantRaw = await prisma.restaurant.findUnique({
-      where: { id: Number(restaurantId) },
-      select: {
-        id: true,
-        name: true,
-        gPlaceId: true,
-        awards: {
-          select: award,
-        },
-        articles: {
-          select: {
-            articles: {
-              select: article,
-            },
-          },
-        },
-      },
-    });
-
-    const restaurant = {
-      ...restaurantRaw,
-      articles: restaurantRaw?.articles.map(({ articles }) => articles),
-    };
+    const restaurant = await getRestaurantById(Number(restaurantId));
 
     res.json(restaurant);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/restaurant/:restaurantId/articles', async (req, res, next) => {
-  const { restaurantId } = req.params;
-
-  try {
-    const restaurantRaw = await prisma.restaurant.findUnique({
-      where: { id: Number(restaurantId) },
-      select: {
-        articles: {
-          select: {
-            articles: {
-              select: article,
-            },
-          },
-        },
-      },
-    });
-
-    const articles = restaurantRaw?.articles.map(({ articles }) => articles);
-
-    res.json(articles);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/restaurant/:restaurantId/awards', async (req, res, next) => {
-  const { restaurantId } = req.params;
-
-  try {
-    const awards = await prisma.award.findMany({
-      where: { restaurantId: Number(restaurantId) },
-      select: award,
-    });
-
-    res.json(awards);
   } catch (error) {
     next(error);
   }
