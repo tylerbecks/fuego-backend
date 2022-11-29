@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import prisma from './prisma-client.js';
-import { nextTick } from 'process';
 
 const port = process.env.PORT || 3001;
 
