@@ -7,7 +7,7 @@
     "strict": true,
     "target": "es2020",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "types": ["node"]
   }
