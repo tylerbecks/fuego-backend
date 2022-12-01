@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { getRestaurantById } from './resolver';
+import { getRestaurantById } from './resolver.js';
 
 export type Restaurant = Prisma.PromiseReturnType<typeof getRestaurantById>;
 
