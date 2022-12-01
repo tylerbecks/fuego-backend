@@ -3,7 +3,7 @@ import {
   sortRestaurantsByScore,
   Restaurant,
   AwardSource,
-} from '../sort-restaurant';
+} from '../sort-restaurant.js';
 
 describe('test fuego score', () => {
   const gJelina: Restaurant = {
