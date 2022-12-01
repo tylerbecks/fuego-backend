@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "rootDirs": ["src"],
-    "outDir": "dist",
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
     "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "nodenext",
+    "outDir": "dist",
+    "rootDirs": ["src"],
+    "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
-    "module": "esnext",
-    "moduleResolution": "nodenext",
-    "esModuleInterop": true,
     "types": ["node"]
   }
 }
