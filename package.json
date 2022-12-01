@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm i && tsc",
     "start": "node ./dist/server.js",
     "dev": "tsc && node ./dist/server.js",
     "prepare": "husky install",
