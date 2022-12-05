@@ -4,9 +4,9 @@
   "description": "",
   "main": "./dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "start": "node ./dist/server.js",
-    "dev": "tsc && node ./dist/server.js",
+    "dev": "npx nodemon src/server.ts",
     "prepare": "husky install",
     "test": "vitest",
     "coverage": "vitest run --coverage"
@@ -28,6 +28,7 @@
     "express": "^4.18.2",
     "husky": "^8.0.1",
     "morgan": "^1.10.0",
+    "rimraf": "^3.0.2",
     "typescript": "^4.8.4"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "eslint-plugin-n": "^15.3.0",
     "eslint-plugin-promise": "^6.1.1",
     "lint-staged": "^13.0.3",
+    "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
     "prisma": "^4.6.1",
     "ts-node": "^10.9.1",
