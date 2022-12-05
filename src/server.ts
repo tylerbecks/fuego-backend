@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import prisma from './prisma-client.js';
-import { sortRestaurantsByScore } from './sort-restaurant.js';
-import { getRestaurantById, getRestaurantsByCityId } from './resolver.js';
+import prisma from './prisma-client';
+import { sortRestaurantsByScore } from './sort-restaurant';
+import { getRestaurantById, getRestaurantsByCityId } from './resolver';
 
 const port = process.env.PORT || 3001;
 
