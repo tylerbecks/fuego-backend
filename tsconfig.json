@@ -1,16 +1,16 @@
 {
+  "include": ["src", "scraper", "scripts"],
   "compilerOptions": {
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
     "target": "es2020",
     "types": ["node"]
-  },
-  "include": ["src/**/*.ts"]
+  }
 }
