@@ -7,6 +7,8 @@ import { getRestaurantById, getRestaurantsByCityId } from './resolver';
 
 const port = process.env.PORT || 3001;
 
+const RESTAURANTS_PER_PAGE = 10;
+
 const app = express();
 app.use(cors());
 app.use(morgan('tiny'));
@@ -15,8 +17,25 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+const sliceList = (list: unknown[], page: number, limit: number) => {
+  const start = (page - 1) * limit;
+  const end = page * limit;
+  return list.slice(start, end);
+};
+
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
+  const { page } = req.query;
+
+  if (!page) {
+    res
+      .status(400)
+      .send(
+        'Page number required to fetch restaurants. Please provide a query param like ?page=1'
+      );
+    return;
+  }
+
   city = city.replace('-', ' ');
 
   try {
@@ -27,8 +46,13 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
 
     const restaurants = await getRestaurantsByCityId(cityId);
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
+    const limitedItems = sliceList(
+      sortedRestaurants,
+      Number(page),
+      RESTAURANTS_PER_PAGE
+    );
 
-    res.json(sortedRestaurants);
+    res.json(limitedItems);
   } catch (error) {
     next(error);
   }
