@@ -52,7 +52,7 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       RESTAURANTS_PER_PAGE
     );
 
-    res.json(limitedItems);
+    res.json({ limitedItems, totalRestaurants: sortedRestaurants.length });
   } catch (error) {
     next(error);
   }
