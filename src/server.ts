@@ -46,13 +46,16 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
 
     const restaurants = await getRestaurantsByCityId(cityId);
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
-    const limitedItems = sliceList(
+    const paginateRestaurants = sliceList(
       sortedRestaurants,
       Number(page),
       RESTAURANTS_PER_PAGE
     );
 
-    res.json({ limitedItems, totalRestaurants: sortedRestaurants.length });
+    res.json({
+      restaurants: paginateRestaurants,
+      totalRestaurants: sortedRestaurants.length,
+    });
   } catch (error) {
     next(error);
   }
