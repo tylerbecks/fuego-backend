@@ -9,7 +9,8 @@
     "dev": "npx nodemon src/server.ts",
     "prepare": "husky install",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "dbui": "npx prisma studio"
   },
   "author": "tbecks",
   "license": "ISC",
