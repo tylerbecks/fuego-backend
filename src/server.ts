@@ -26,7 +26,7 @@ const sliceList = (list: unknown[], page: number, limit: number) => {
 
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
-  let { page, articleIds } = req.query;
+  let { page, articleIdsExclude } = req.query;
 
   if (!page) {
     res
@@ -45,9 +45,12 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       select: { id: true },
     });
 
-    const articleIdsArray = getArticleIds(articleIds);
+    const articleIdsExcludeArray = formatArticleIdsExclude(articleIdsExclude);
 
-    const restaurants = await getRestaurantsByCityId(cityId, articleIdsArray);
+    const restaurants = await getRestaurantsByCityId(
+      cityId,
+      articleIdsExcludeArray
+    );
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     const paginateRestaurants = sliceList(
       sortedRestaurants,
@@ -64,11 +67,11 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
   }
 });
 
-const getArticleIds = (
+const formatArticleIdsExclude = (
   articleIdsParam: undefined | string | string[] | ParsedQs | ParsedQs[]
 ) => {
   if (!articleIdsParam) {
-    return undefined;
+    return [];
   }
 
   // articleIds is a string if there is only one articleId, an array if there are multiple

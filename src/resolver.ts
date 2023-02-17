@@ -44,7 +44,7 @@ export const getRestaurantById = async (restaurantId: number) => {
 
 export const getRestaurantsByCityId = async (
   cityId: number,
-  articleIdsToFilter: number[] | undefined
+  articleIdsToExclude: number[]
 ) => {
   const restaurantsRaw = await prisma.restaurant.findMany({
     where: { cityId: Number(cityId) },
@@ -67,20 +67,14 @@ export const getRestaurantsByCityId = async (
 
   return restaurantsRaw.map((restaurant) => {
     const articles = restaurant?.articles.map(({ articles }) => articles);
-    const articleIdsForCity = articles?.map(({ id }) => id);
 
-    // If the api has a bunch of articleIds for a different city, we don't want to filter
-    const isArticleIdFilterListValid =
-      articleIdsToFilter &&
-      articleIdsToFilter.some((id) => articleIdsForCity?.includes(id));
-
-    const filteredArticles = articles?.filter(({ id }) =>
-      articleIdsToFilter?.includes(id)
+    const filteredArticles = articles?.filter(
+      ({ id }) => !articleIdsToExclude.includes(id)
     );
 
     return {
       ...restaurant,
-      articles: isArticleIdFilterListValid ? filteredArticles : articles,
+      articles: filteredArticles,
     };
   });
 };
