@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import prisma from './prisma-client';
+import { ParsedQs } from 'qs';
 import { sortRestaurantsByScore } from './sort-restaurant';
 import { getRestaurantById, getRestaurantsByCityId } from './resolver';
 
@@ -25,7 +26,7 @@ const sliceList = (list: unknown[], page: number, limit: number) => {
 
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
-  const { page } = req.query;
+  let { page, articleIds } = req.query;
 
   if (!page) {
     res
@@ -44,7 +45,9 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       select: { id: true },
     });
 
-    const restaurants = await getRestaurantsByCityId(cityId);
+    const articleIdsArray = getArticleIds(articleIds);
+
+    const restaurants = await getRestaurantsByCityId(cityId, articleIdsArray);
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     const paginateRestaurants = sliceList(
       sortedRestaurants,
@@ -60,6 +63,21 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
     next(error);
   }
 });
+
+const getArticleIds = (
+  articleIdsParam: undefined | string | string[] | ParsedQs | ParsedQs[]
+) => {
+  if (!articleIdsParam) {
+    return undefined;
+  }
+
+  // articleIds is a string if there is only one articleId, an array if there are multiple
+  const articleIdsArray = Array.isArray(articleIdsParam)
+    ? articleIdsParam
+    : [articleIdsParam];
+
+  return articleIdsArray.map((id) => Number(id));
+};
 
 app.get('/city/:cityId/articles', async (req, res, next) => {
   const { cityId } = req.params;
