@@ -44,7 +44,7 @@ export const getRestaurantById = async (restaurantId: number) => {
 
 export const getRestaurantsByCityId = async (
   cityId: number,
-  articleIdsToExclude: number[]
+  articleIdsArr: number[]
 ) => {
   const restaurantsRaw = await prisma.restaurant.findMany({
     where: { cityId: Number(cityId) },
@@ -68,13 +68,24 @@ export const getRestaurantsByCityId = async (
   return restaurantsRaw.map((restaurant) => {
     const articles = restaurant?.articles.map(({ articles }) => articles);
 
-    const filteredArticles = articles?.filter(
-      ({ id }) => !articleIdsToExclude.includes(id)
-    );
-
     return {
       ...restaurant,
-      articles: filteredArticles,
+      articles: filterArticles(articles, articleIdsArr),
     };
   });
+};
+
+const filterArticles = (
+  articles: Array<{ id: number; title: string; source: string; url: string }>,
+  articleIds: number[]
+) => {
+  const validArticleIds = articleIds.filter((id) =>
+    articles?.find((article) => article.id === id)
+  );
+
+  if (validArticleIds.length === 0) {
+    return articles;
+  }
+
+  return articles?.filter(({ id }) => validArticleIds.includes(id));
 };

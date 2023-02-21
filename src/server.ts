@@ -26,7 +26,7 @@ const sliceList = (list: unknown[], page: number, limit: number) => {
 
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
-  let { page, articleIdsExclude } = req.query;
+  let { page, articleIds } = req.query;
 
   if (!page) {
     res
@@ -45,12 +45,9 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       select: { id: true },
     });
 
-    const articleIdsExcludeArray = formatArticleIdsExclude(articleIdsExclude);
+    const articleIdsArr = formatArticleIdsExclude(articleIds);
 
-    const restaurants = await getRestaurantsByCityId(
-      cityId,
-      articleIdsExcludeArray
-    );
+    const restaurants = await getRestaurantsByCityId(cityId, articleIdsArr);
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     const paginateRestaurants = sliceList(
       sortedRestaurants,
