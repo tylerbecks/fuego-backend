@@ -44,7 +44,7 @@ export const getRestaurantById = async (restaurantId: number) => {
 
 export const getRestaurantsByCityId = async (
   cityId: number,
-  articleIdsArr: number[]
+  articleIds: number[] = []
 ) => {
   const restaurantsRaw = await prisma.restaurant.findMany({
     where: { cityId: Number(cityId) },
@@ -70,7 +70,7 @@ export const getRestaurantsByCityId = async (
 
     return {
       ...restaurant,
-      articles: filterArticles(articles, articleIdsArr),
+      articles: filterArticles(articles, articleIds),
     };
   });
 };
