@@ -220,18 +220,18 @@ const main = async () => {
     console.log(`Starting city: ${city}`);
     city = city.replace(' ', '_');
 
-    const cityId = await createCity(cityMetadata);
+    // const cityId = await createCity(cityMetadata);
 
-    const restaurantsJSON = fs.readFileSync(
-      `static_data/cities/${city}.json`,
-      'utf-8'
-    );
+    // const restaurantsJSON = fs.readFileSync(
+    //   `static_data/cities/${city}.json`,
+    //   'utf-8'
+    // );
 
-    let restaurantsToMigrate = JSON.parse(restaurantsJSON);
+    // let restaurantsToMigrate = JSON.parse(restaurantsJSON);
 
-    for (const restaurant of restaurantsToMigrate) {
-      await createRestaurant(restaurant, cityId);
-    }
+    // for (const restaurant of restaurantsToMigrate) {
+    //   await createRestaurant(restaurant, cityId);
+    // }
   }
 };
 

@@ -14,10 +14,10 @@ model Article {
   deletedAt   DateTime?               @map("deleted_at") @db.Timestamptz(6)
   url         String                  @unique(map: "unique_url") @db.VarChar
   title       String                  @db.VarChar
-  imageUrl    String?                 @map("image_url") @db.VarChar
-  description String?                 @db.VarChar
   source      String                  @map("article_source") @db.VarChar
   cityId      Int                     @map("city_id")
+  description String?                 @db.VarChar
+  imageUrl    String?                 @map("image_url") @db.VarChar
   restaurants ArticlesToRestaurants[] @relation("articlestorestaurantsToarticles")
   cities      City                    @relation("articlesTocities", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")
 
@@ -60,6 +60,7 @@ model Restaurant {
   name      String                  @db.VarChar
   gPlaceId  String?                 @map("g_place_id") @db.VarChar
   cityId    Int                     @map("city_id")
+  cuisine   String?                 @db.VarChar
   articles  ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
   awards    Award[]
   cities    City                    @relation("citiesTorestaurants", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")

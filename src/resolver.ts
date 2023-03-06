@@ -52,6 +52,7 @@ export const getRestaurantsByCityId = async (
       id: true,
       name: true,
       gPlaceId: true,
+      cuisine: true,
       awards: {
         select: award,
       },
