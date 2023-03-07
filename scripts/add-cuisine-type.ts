@@ -54,7 +54,7 @@ const formatCuisineResult = (cuisine: string) => {
 };
 
 const getCuisine = async (restaurantName: string, city: string) => {
-  const prompt = `Describe the primary cuisine type for ${restaurantName} in ${city} in 5 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
+  const prompt = `Describe the primary cuisine type for ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
   return await askGPT3(prompt, restaurantName);
 };
 
@@ -100,22 +100,22 @@ const sleep = (ms: number) => {
 };
 
 const CITIES = [
-  // { city: 'austin', state: 'tx', country: 'usa' },
-  // { city: 'barcelona', state: null, country: 'spain' },
-  // { city: 'boston', state: 'ma', country: 'usa' },
-  // { city: 'chicago', state: 'il', country: 'usa' },
-  // { city: 'denver', state: 'co', country: 'usa' },
-  // { city: 'houston', state: 'tx', country: 'usa' },
-  // { city: 'las vegas', state: 'nv', country: 'usa' },
-  // { city: 'london', state: null, country: 'united kingdom' },
-  // { city: 'los angeles', state: 'ca', country: 'usa' },
-  // { city: 'mexico city', state: null, country: 'mexico' },
-  // { city: 'miami', state: 'fl', country: 'usa' },
-  // { city: 'munich', state: null, country: 'germany' },
-  // { city: 'nashville', state: 'tn', country: 'usa' },
-  // { city: 'new orleans', state: 'la', country: 'usa' },
-  // { city: 'new york', state: 'ny', country: 'usa' },
-  // { city: 'oaxaca', state: null, country: 'mexico' },
+  { city: 'austin', state: 'tx', country: 'usa' },
+  { city: 'barcelona', state: null, country: 'spain' },
+  { city: 'boston', state: 'ma', country: 'usa' },
+  { city: 'chicago', state: 'il', country: 'usa' },
+  { city: 'denver', state: 'co', country: 'usa' },
+  { city: 'houston', state: 'tx', country: 'usa' },
+  { city: 'las vegas', state: 'nv', country: 'usa' },
+  { city: 'london', state: null, country: 'united kingdom' },
+  { city: 'los angeles', state: 'ca', country: 'usa' },
+  { city: 'mexico city', state: null, country: 'mexico' },
+  { city: 'miami', state: 'fl', country: 'usa' },
+  { city: 'munich', state: null, country: 'germany' },
+  { city: 'nashville', state: 'tn', country: 'usa' },
+  { city: 'new orleans', state: 'la', country: 'usa' },
+  { city: 'new york', state: 'ny', country: 'usa' },
+  { city: 'oaxaca', state: null, country: 'mexico' },
   { city: 'paris', state: null, country: 'france' },
   { city: 'rome', state: null, country: 'italy' },
   { city: 'san diego', state: 'ca', country: 'usa' },
