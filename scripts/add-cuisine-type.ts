@@ -7,7 +7,7 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration);
 
-const askGPT3 = async (prompt: string) => {
+const askGPT3 = async (prompt: string, restaurantName: string) => {
   if (!configuration.apiKey) {
     throw new Error(
       'OpenAI API key not configured, please follow instructions in README.md'
@@ -24,9 +24,9 @@ const askGPT3 = async (prompt: string) => {
     const firstChoice = completion.data.choices[0].text as string;
     const cuisine = formatCuisineResult(firstChoice);
 
-    console.log(prompt);
-    console.log('GPT-3 response:');
-    console.log(cuisine);
+    console.log(`RESTAURANT: ${restaurantName}`);
+    console.log(`CUISINE: ${cuisine}`);
+    console.log();
 
     return cuisine;
   } catch (error: any) {
@@ -39,7 +39,7 @@ const askGPT3 = async (prompt: string) => {
 };
 
 const formatCuisineResult = (cuisine: string) => {
-  cuisine = cuisine.replace('\n', '');
+  cuisine = cuisine.replaceAll('\n', '');
   // strip last character if it's a period
   if (cuisine[cuisine.length - 1] === '.') {
     cuisine = cuisine.slice(0, -1);
@@ -54,8 +54,8 @@ const formatCuisineResult = (cuisine: string) => {
 };
 
 const getCuisine = async (restaurantName: string, city: string) => {
-  const prompt = `Describe the primary cuisine type for ${restaurantName} in ${city} in 5 words or less. Examples: French seafood, upscale Indian, Greek fast casual street food. Don't use the word cuisine.`;
-  return await askGPT3(prompt);
+  const prompt = `Describe the primary cuisine type for ${restaurantName} in ${city} in 5 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
+  return await askGPT3(prompt, restaurantName);
 };
 
 const getCityId = async (cityName: string) => {
@@ -77,7 +77,9 @@ const getCuisinesForRestaurantsInCity = async (cityName: string) => {
     where: { cityId, cuisine: null },
   });
 
-  console.log(`${restaurants.length} without cuisine remaining in ${cityName}`);
+  console.log(
+    `${restaurants.length} restaurants without cuisine remaining in ${cityName}`
+  );
 
   for (const restaurant of restaurants) {
     const cuisine = await getCuisine(restaurant.name, cityName);
@@ -87,7 +89,7 @@ const getCuisinesForRestaurantsInCity = async (cityName: string) => {
     });
 
     // The openai API has a rate limit of 60 requests per minute
-    await sleep(700);
+    await sleep(900);
   }
 };
 
@@ -98,7 +100,7 @@ const sleep = (ms: number) => {
 };
 
 const CITIES = [
-  { city: 'austin', state: 'tx', country: 'usa' },
+  // { city: 'austin', state: 'tx', country: 'usa' },
   // { city: 'barcelona', state: null, country: 'spain' },
   // { city: 'boston', state: 'ma', country: 'usa' },
   // { city: 'chicago', state: 'il', country: 'usa' },
@@ -114,14 +116,14 @@ const CITIES = [
   // { city: 'new orleans', state: 'la', country: 'usa' },
   // { city: 'new york', state: 'ny', country: 'usa' },
   // { city: 'oaxaca', state: null, country: 'mexico' },
-  // { city: 'paris', state: null, country: 'france' },
-  // { city: 'rome', state: null, country: 'italy' },
-  // { city: 'san diego', state: 'ca', country: 'usa' },
-  // { city: 'san francisco', state: 'ca', country: 'usa' },
-  // { city: 'seattle', state: 'wa', country: 'usa' },
-  // { city: 'tokyo', state: null, country: 'japan' },
-  // { city: 'washington', state: 'dc', country: 'usa' },
-  // { city: 'zurich', state: null, country: 'switzerland' },
+  { city: 'paris', state: null, country: 'france' },
+  { city: 'rome', state: null, country: 'italy' },
+  { city: 'san diego', state: 'ca', country: 'usa' },
+  { city: 'san francisco', state: 'ca', country: 'usa' },
+  { city: 'seattle', state: 'wa', country: 'usa' },
+  { city: 'tokyo', state: null, country: 'japan' },
+  { city: 'washington', state: 'dc', country: 'usa' },
+  { city: 'zurich', state: null, country: 'switzerland' },
 ];
 
 const main = async () => {
@@ -129,7 +131,7 @@ const main = async () => {
     let { city } = cityMetadata;
     console.log('====================================================');
     console.log(`Starting city: ${city}`);
-    getCuisinesForRestaurantsInCity(city);
+    await getCuisinesForRestaurantsInCity(city);
   }
 };
 
