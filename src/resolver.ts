@@ -23,6 +23,7 @@ export const getRestaurantById = async (restaurantId: number) => {
       id: true,
       name: true,
       gPlaceId: true,
+      cuisine: true,
       awards: {
         select: award,
       },
