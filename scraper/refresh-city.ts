@@ -16,18 +16,19 @@ type Restaurant = {
 const getUniqueArticles = (restaurants: Restaurant[]) => {
   const allArticles = restaurants.flatMap(({ articles }) => articles);
   const flattenedAllArticles = allArticles.map(({ articles }) => articles);
-  return arrayUniqueByKey(flattenedAllArticles, 'id');
+  return getUniqueItemsByKey(flattenedAllArticles, 'id');
 };
 
 const kebabToLowerCase = (str: string) =>
   str.replaceAll('-', ' ').toLowerCase();
 
-const arrayUniqueByKey = (
-  arr: Array<{
-    [key: string]: unknown;
-  }>,
-  key: string
-) => [...new Map(arr.map((item) => [item[key], item])).values()];
+const getUniqueItemsByKey = <
+  Obj extends Record<Key, unknown>,
+  Key extends keyof Obj
+>(
+  arr: Obj[],
+  key: Key
+): Obj[] => [...new Map(arr.map((item) => [item[key], item])).values()];
 
 (async () => {
   let param = process.argv[2];
@@ -74,8 +75,7 @@ const arrayUniqueByKey = (
   console.log(`There are ${articles.length} unique articles`);
 
   for (const article of articles) {
-    // TODO fix unknown type from arrayUniqueByKey and remove as string
-    const articleScraper = new ArticleScraper(article.url as string);
+    const articleScraper = new ArticleScraper(article.url);
     // const restaurantsForArticle = articleScraper.getRestaurants();
     // need to update the existing restaurants, "delete" the ones that fell off the list, and add the new ones
   }
