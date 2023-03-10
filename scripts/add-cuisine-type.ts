@@ -55,7 +55,7 @@ const formatCuisineResult = (cuisine: string) => {
 };
 
 const getCuisine = async (restaurantName: string, city: string) => {
-  const prompt = `Describe the primary cuisine type for ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
+  const prompt = `Describe the primary cuisine type for the restaurant ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
   return await askGPT3(prompt, restaurantName);
 };
 
@@ -89,12 +89,6 @@ const getCuisinesForRestaurantsInCity = async (cityName: string) => {
       data: { cuisine: cuisine ?? null },
     });
   }
-};
-
-const sleep = (ms: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
 };
 
 const CITIES = [

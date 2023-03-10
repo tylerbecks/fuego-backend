@@ -63,6 +63,7 @@ export default class ArticleScraper {
   try {
     const restaurants = await scraper.getRestaurants();
     console.log(restaurants);
+    // scraper.close();
   } catch (error) {
     throw error;
   }
