@@ -15,17 +15,18 @@ const askGPT3 = async (prompt: string, restaurantName: string) => {
   }
 
   try {
-    const completion = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt,
+    const completion = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
     });
 
-    const firstChoice = completion.data.choices[0].text as string;
+    const firstChoice = completion.data.choices[0].message?.content as string;
     const cuisine = formatCuisineResult(firstChoice);
 
     console.log(`RESTAURANT: ${restaurantName}`);
     console.log(`CUISINE: ${cuisine}`);
+    // add a new line
     console.log();
 
     return cuisine;
@@ -74,7 +75,7 @@ const getCuisinesForRestaurantsInCity = async (cityName: string) => {
   const cityId = await getCityId(cityName);
 
   const restaurants = await prisma.restaurant.findMany({
-    where: { cityId, cuisine: null },
+    where: { cityId },
   });
 
   console.log(
@@ -87,9 +88,6 @@ const getCuisinesForRestaurantsInCity = async (cityName: string) => {
       where: { id: restaurant.id },
       data: { cuisine: cuisine ?? null },
     });
-
-    // The openai API has a rate limit of 60 requests per minute
-    await sleep(900);
   }
 };
 
