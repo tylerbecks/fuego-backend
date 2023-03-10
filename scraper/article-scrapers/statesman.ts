@@ -1,6 +1,6 @@
 import Browser from '../browser';
 
-export default class CondeNast extends Browser {
+export default class Statesman extends Browser {
   url: string;
 
   constructor(url: string) {

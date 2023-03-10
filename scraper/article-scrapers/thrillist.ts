@@ -1,6 +1,6 @@
 import Browser from '../browser';
 
-export default class CondeNast extends Browser {
+export default class Thrillist extends Browser {
   url: string;
 
   constructor(url: string) {
