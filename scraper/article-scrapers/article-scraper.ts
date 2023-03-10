@@ -61,7 +61,8 @@ export default class ArticleScraper {
   const scraper = new ArticleScraper(url);
 
   try {
-    await scraper.getRestaurants();
+    const restaurants = await scraper.getRestaurants();
+    console.log(restaurants);
   } catch (error) {
     throw error;
   }
