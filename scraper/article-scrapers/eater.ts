@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
+import { asyncFilter } from '../utils/async-helpers';
 
 export default class Eater extends Browser {
   url: string;
@@ -53,16 +54,3 @@ export default class Eater extends Browser {
     return await restaurantLocator.locator('p').first().textContent();
   }
 }
-
-const asyncFilter = async <T>(
-  arr: T[],
-  callback: (arg: T) => Promise<boolean>
-): Promise<T[]> => {
-  const fail = Symbol();
-
-  const mappedItems = await Promise.all(
-    arr.map(async (item) => ((await callback(item)) ? item : fail))
-  );
-
-  return mappedItems.filter((i) => i !== fail) as T[];
-};
