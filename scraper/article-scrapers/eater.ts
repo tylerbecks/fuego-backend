@@ -1,8 +1,9 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
 import { asyncFilter } from '../utils/async-helpers';
+import { ArticleScraperInterface } from './article-scraper';
 
-export default class Eater extends Browser {
+export default class Eater extends Browser implements ArticleScraperInterface {
   url: string;
 
   constructor(url: string) {
@@ -13,15 +14,13 @@ export default class Eater extends Browser {
   async getRestaurants() {
     if (!this.browser) {
       console.warn('Browser not initialized');
-      return;
+      return [];
     }
-    console.log(`Scraping ${this.url}`);
 
     const page = await this.browser.newPage();
     await page.goto(this.url);
 
     const restaurants = await this.#getRestaurantLocators(page);
-    console.log(`Found ${restaurants.length} restaurants`);
 
     return await Promise.all(
       restaurants.map(async (r) => {

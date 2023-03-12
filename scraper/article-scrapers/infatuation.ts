@@ -1,10 +1,14 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
+import { ArticleScraperInterface } from './article-scraper';
 
 const RESTAURANT_CARD_SELECTOR = '[data-testid="venue-venueCard"]';
 const RESTAURANT_NAME_SELECTOR = '[data-testid="venue-venueLink"]';
 
-export default class Infatuation extends Browser {
+export default class Infatuation
+  extends Browser
+  implements ArticleScraperInterface
+{
   url: string;
 
   constructor(url: string) {
@@ -15,15 +19,13 @@ export default class Infatuation extends Browser {
   async getRestaurants() {
     if (!this.browser) {
       console.warn('Browser not initialized');
-      return;
+      return [];
     }
-    console.log(`Scraping ${this.url}`);
 
     const page = await this.browser.newPage();
     await page.goto(this.url);
 
     const restaurants = await this.#getRestaurantLocators(page);
-    console.log(`Found ${restaurants.length} restaurants`);
     const descriptions = await this.#getDescriptions(page);
 
     return await Promise.all(

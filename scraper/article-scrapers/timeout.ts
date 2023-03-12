@@ -1,6 +1,10 @@
 import Browser from '../browser';
+import { ArticleScraperInterface } from './article-scraper';
 
-export default class Timeout extends Browser {
+export default class Timeout
+  extends Browser
+  implements ArticleScraperInterface
+{
   url: string;
 
   constructor(url: string) {
@@ -10,13 +14,11 @@ export default class Timeout extends Browser {
 
   async getRestaurants() {
     if (!this.browser) {
-      return;
+      return [];
     }
-    console.log(`Scraping ${this.url}`);
-
     const page = await this.browser.newPage();
     await page.goto(this.url);
 
-    return {};
+    return [];
   }
 }

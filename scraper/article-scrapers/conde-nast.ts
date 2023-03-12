@@ -16,15 +16,13 @@ export default class CondeNast
   async getRestaurants() {
     if (!this.browser) {
       console.warn('Browser not initialized');
-      return;
+      return [];
     }
-    console.log(`Scraping ${this.url}`);
 
     const page = await this.browser.newPage();
     await page.goto(this.url);
 
     const restaurants = await this.#getRestaurantLocators(page);
-    console.log(`Found ${restaurants.length} restaurants`);
 
     return await Promise.all(
       restaurants.map(async (r) => {
@@ -44,7 +42,11 @@ export default class CondeNast
 
   async #getName(restaurantLocator: Locator) {
     const heading = await restaurantLocator.getByRole('heading').textContent();
-    return heading?.replace(/Arrow$/, '');
+    if (!heading) {
+      console.warn(`Failed to find name for restaurant: ${restaurantLocator}`);
+      return null;
+    }
+    return heading.replace(/Arrow$/, '');
   }
 
   async #getDescription(restaurantLocator: Locator) {
