@@ -2,6 +2,10 @@ import { Locator, Page } from 'playwright';
 import Browser from '../browser';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
 
+// NOTES
+// https://www.timeout.com/tokyo/restaurants/best-restaurants-tokyo
+// The tokyo article does this weird thing where it splits the list into multiple zones.
+// It's the only article that does this, so I'm just letting the bug exist and scraping the first secion.
 export default class Timeout
   extends Browser
   implements ArticleScraperInterface
@@ -34,19 +38,20 @@ export default class Timeout
   }
 
   async #getRestaurantLocators(page: Page) {
-    // Timeout sometimes puts a section above the list of restaurants for the Timeout Market,
-    // so skip over this if no cards are found
     const zones = await page.locator('.zone').all();
     const NUM_TILES_IN_MARKET_SECTION = 1;
 
     for (const zone of zones) {
       const tiles = await zone.locator('article.tile').all();
+      // Timeout sometimes puts a section above the list of restaurants for the Timeout Market,
+      // so skip over this if no cards are found
       if (tiles.length > NUM_TILES_IN_MARKET_SECTION) {
         return tiles;
       }
     }
 
     console.warn(`No restaurant cards found for ${this.url}`);
+
     return [];
   }
 
