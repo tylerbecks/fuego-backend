@@ -2,8 +2,6 @@ import { Page } from 'playwright';
 import Browser from '../browser';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
 
-// TODO: run this on all articles and ensure that it works. If it does, then remove both parsers and just use the one that works.
-
 export default class CultureTrip
   extends Browser
   implements ArticleScraperInterface
@@ -15,17 +13,6 @@ export default class CultureTrip
     this.url = url;
   }
 
-  async chooseParser(page: Page) {
-    const nextData = await getNextData(page);
-    const itemCards = getItemCards(nextData);
-
-    if (null) {
-      return new CultureTrip1(page, this.url);
-    }
-
-    return new CultureTrip2(page, this.url);
-  }
-
   async getRestaurants() {
     if (!this.browser) {
       console.warn('Browser not initialized');
@@ -35,55 +22,7 @@ export default class CultureTrip
     const page = await this.browser.newPage();
     await page.goto(this.url);
 
-    const parser = await this.chooseParser(page);
-
-    return parser.getRestaurants();
-  }
-}
-
-interface BrowserlessScraper {
-  getRestaurants: GetRestaurants;
-}
-
-// Example: https://theculturetrip.com/north-america/usa/illinois/articles/chicago-s-10-best-restaurants-cultural-eats-fine-dining/
-class CultureTrip1 implements BrowserlessScraper {
-  page: Page;
-  url: string;
-
-  constructor(page: Page, url: string) {
-    console.log('Using CultureTrip1 parser');
-    this.page = page;
-    this.url = url;
-  }
-
-  async getRestaurants() {
-    const nextData = await getNextData(this.page);
-    if (!nextData) {
-      console.warn(`No data found for ${this.url}`);
-      return [];
-    }
-    const itemCards = getItemCards(nextData);
-
-    return itemCards.map((c) => ({
-      name: c.title ?? null,
-      description: c.content ?? null,
-    }));
-  }
-}
-
-// Example: https://theculturetrip.com/north-america/usa/massachusetts/articles/boston-s-10-must-try-restaurants-a-fusion-of-art-food/
-class CultureTrip2 implements BrowserlessScraper {
-  page: Page;
-  url: string;
-
-  constructor(page: Page, url: string) {
-    console.log('Using CultureTrip2 parser');
-    this.page = page;
-    this.url = url;
-  }
-
-  async getRestaurants() {
-    const nextData = await getNextData(this.page);
+    const nextData = await this.#getNextData(page);
     if (!nextData) {
       console.warn(`No data found for ${this.url}`);
       return [];
@@ -93,7 +32,7 @@ class CultureTrip2 implements BrowserlessScraper {
     const restaurantNameHeaders =
       this.#getRestaurantNameHeaders(articleContent);
 
-    const itemCards = getItemCards(nextData);
+    const itemCards = this.#getItemCards(nextData);
     const itemCardRestaurants = itemCards.map((c) => ({
       name: c.title ?? null,
       description: c.content ?? null,
@@ -128,18 +67,18 @@ class CultureTrip2 implements BrowserlessScraper {
 
     return nextParagraph?.content ?? null;
   }
+
+  async #getNextData(page: Page): Promise<NextData> {
+    const nextDataScriptTag = await page.locator('#__NEXT_DATA__');
+    const content = await nextDataScriptTag.textContent();
+    return content ? JSON.parse(content) : null;
+  }
+
+  #getItemCards(nextData: NextData) {
+    const { articleContent } = nextData.props.pageProps.pageData;
+    return articleContent.filter((c) => c.type === 'item-card');
+  }
 }
-
-const getNextData = async (page: Page): Promise<NextData> => {
-  const nextDataScriptTag = await page.locator('#__NEXT_DATA__');
-  const content = await nextDataScriptTag.textContent();
-  return content ? JSON.parse(content) : null;
-};
-
-const getItemCards = (nextData: NextData) => {
-  const { articleContent } = nextData.props.pageProps.pageData;
-  return articleContent.filter((c) => c.type === 'item-card');
-};
 
 type NextData = {
   props: {
