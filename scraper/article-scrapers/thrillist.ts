@@ -38,6 +38,7 @@ export default class Thrillist
     }
 
     const page = await this.browser.newPage();
+
     try {
       await page.goto(this.url);
     } catch (error) {

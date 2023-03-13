@@ -66,22 +66,25 @@ export default class ArticleScraper {
 
 (async function () {
   const urls = [
-    'https://www.thrillist.com/eat/boston/best-restaurants-boston',
-    'https://www.thrillist.com/eat/denver/best-restaurants-denver',
-    'https://www.thrillist.com/eat/las-vegas/best-restaurants-las-vegas',
-    'https://www.thrillist.com/eat/los-angeles/best-restaurants-los-angeles',
-    'https://www.thrillist.com/eat/miami/best-restaurants-miami',
-    'https://www.thrillist.com/eat/nation/best-restaurants-in-munich-the-eight-cool-places-to-eat-thrilist-munich',
-    'https://www.thrillist.com/eat/nashville/best-restaurants-nashville',
-    'https://www.thrillist.com/eat/new-york/best-restaurants-nyc',
-    'https://www.thrillist.com/travel/nation/best-restaurants-in-rome-places-to-eat',
-    'https://www.thrillist.com/eat/san-diego/best-restaurants-san-diego',
-    'https://www.thrillist.com/eat/san-francisco/best-restaurants-san-francisco',
-    'https://www.thrillist.com/eat/seattle/best-restaurants-seattle',
-    'https://www.thrillist.com/eat/washington-dc/best-restaurants-washington-dc',
-    'https://www.thrillist.com/eat/chicago/best-restaurants-chicago',
-    'https://www.thrillist.com/eat/houston/best-restaurants-houston',
-    'https://www.thrillist.com/eat/paris/best-restaurants-paris',
+    // 'https://theculturetrip.com/north-america/usa/massachusetts/articles/boston-s-10-must-try-restaurants-a-fusion-of-art-food/',
+    // 'https://theculturetrip.com/north-america/usa/illinois/articles/chicago-s-10-best-restaurants-cultural-eats-fine-dining/',
+    // 'https://theculturetrip.com/north-america/usa/california/articles/the-top-ten-san-francisco-restaurants/',
+    // 'https://theculturetrip.com/europe/spain/articles/the-best-restaurants-in-barcelona/',
+    // 'https://theculturetrip.com/north-america/usa/colorado/articles/where-to-eat-in-denver-colorado-the-10-best-restaurants/',
+    // 'https://theculturetrip.com/north-america/usa/texas/articles/gourmet-guide-to-houston-s-10-best-restaurants-diners/',
+    // 'https://theculturetrip.com/europe/united-kingdom/england/london/articles/the-best-restaurants-in-london/',
+    // 'https://theculturetrip.com/north-america/usa/california/articles/the-best-restaurants-in-los-angeles/',
+    'https://theculturetrip.com/north-america/mexico/articles/mexico-city-s-top-10-restaurants-taquer-as-you-should-try/',
+    // 'https://theculturetrip.com/north-america/usa/florida/articles/insider-s-guide-to-miami-top-10-restaurants-you-will-love/',
+    'https://theculturetrip.com/europe/germany/articles/9-best-restaurants-in-munich-s-old-town',
+    // 'https://theculturetrip.com/north-america/usa/tennessee/articles/nashville-s-10-best-local-restaurants-music-city-dining/',
+    // 'https://theculturetrip.com/north-america/usa/louisiana/new-orleans/articles/new-orleans-10-best-restaurants-reimagining-creole-cooking/',
+    // 'https://theculturetrip.com/north-america/mexico/articles/top-10-restaurants-to-try-in-oaxaca-mexico-s-cultural-gem/',
+    // 'https://theculturetrip.com/europe/france/paris/articles/the-10-best-restaurants-in-paris/',
+    // 'https://theculturetrip.com/europe/italy/articles/romes-best-restaurants-according-to-the-citys-culinary-experts/',
+    // 'https://theculturetrip.com/north-america/usa/california/articles/san-diego-s-top-10-restaurants-the-best-local-eats/',
+    'https://theculturetrip.com/asia/japan/articles/tokyo-s-10-stunning-restaurants-a-galaxy-of-michelin-stars/',
+    // 'https://theculturetrip.com/europe/switzerland/articles/the-10-best-restaurants-in-zurich-s-city-centre/',
   ];
   // const url = process.argv[2];
 
@@ -90,6 +93,7 @@ export default class ArticleScraper {
 
     try {
       const restaurants = await scraper.getRestaurants();
+      console.log(restaurants);
     } catch (error) {
       throw error;
     }
