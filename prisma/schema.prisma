@@ -81,3 +81,15 @@ model ArticlesToRestaurants {
 
   @@map("_articlestorestaurants")
 }
+
+model PlaceIdCache {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime @map("deleted_at") @db.Timestamptz(6)
+  placeId   String   @map("place_id") @db.VarChar
+  name      String   @unique @db.VarChar
+  cityId    Int      @map("city_id")
+
+  @@map("place_id_cache")
+}
