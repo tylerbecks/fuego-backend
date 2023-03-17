@@ -2,6 +2,7 @@ import { Page } from 'playwright';
 import Browser from '../browser';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
 
+// The Culture Trip articles often don't have the same number of restaurants as they say in the url or title
 export default class CultureTrip
   extends Browser
   implements ArticleScraperInterface
