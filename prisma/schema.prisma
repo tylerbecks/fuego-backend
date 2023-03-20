@@ -58,7 +58,7 @@ model Restaurant {
   updatedAt DateTime?               @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime?               @map("deleted_at") @db.Timestamptz(6)
   name      String                  @db.VarChar
-  gPlaceId  String?                 @map("g_place_id") @db.VarChar
+  gPlaceId  String?                 @unique @map("g_place_id") @db.VarChar
   cityId    Int                     @map("city_id")
   cuisine   String?                 @db.VarChar
   articles  ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
@@ -88,8 +88,9 @@ model PlaceIdCache {
   updatedAt DateTime @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime @map("deleted_at") @db.Timestamptz(6)
   placeId   String   @map("place_id") @db.VarChar
-  name      String   @unique @db.VarChar
+  name      String   @db.VarChar
   cityId    Int      @map("city_id")
 
+  @@unique([name, cityId])
   @@map("place_id_cache")
 }
