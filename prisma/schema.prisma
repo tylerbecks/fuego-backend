@@ -9,7 +9,7 @@ datasource db {
 
 model Article {
   id          Int                     @id @default(autoincrement())
-  createdAt   DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt   DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime?               @map("updated_at") @db.Timestamptz(6)
   deletedAt   DateTime?               @map("deleted_at") @db.Timestamptz(6)
   url         String                  @unique(map: "unique_url") @db.VarChar
@@ -26,7 +26,7 @@ model Article {
 
 model Award {
   id           Int        @id @default(autoincrement())
-  createdAt    DateTime?  @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime?  @map("updated_at") @db.Timestamptz(6)
   deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
   restaurantId Int        @map("restaurant_id")
@@ -54,7 +54,7 @@ model City {
 
 model Restaurant {
   id        Int                     @id @default(autoincrement())
-  createdAt DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime?               @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime?               @map("deleted_at") @db.Timestamptz(6)
   name      String                  @db.VarChar
@@ -69,7 +69,7 @@ model Restaurant {
 }
 
 model ArticlesToRestaurants {
-  createdAt    DateTime?  @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime?  @map("updated_at") @db.Timestamptz(6)
   deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
   articleId    Int        @map("article_id")
@@ -83,13 +83,13 @@ model ArticlesToRestaurants {
 }
 
 model PlaceIdCache {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @map("updated_at") @db.Timestamptz(6)
-  deletedAt DateTime @map("deleted_at") @db.Timestamptz(6)
-  placeId   String   @map("place_id") @db.VarChar
-  name      String   @db.VarChar
-  cityId    Int      @map("city_id")
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  placeId   String    @map("place_id") @db.VarChar
+  name      String    @db.VarChar
+  cityId    Int       @map("city_id")
 
   @@unique([name, cityId])
   @@map("place_id_cache")

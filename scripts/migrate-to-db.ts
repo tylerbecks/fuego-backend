@@ -1,4 +1,3 @@
-import fs from 'fs';
 import prisma from '../src/prisma-client.js';
 
 type JamesBeard = {
