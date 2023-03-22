@@ -19,7 +19,7 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint', 'import', 'simple-import-sort'],
   rules: {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreIIFE: true }],
     'import/first': 'error',
@@ -30,6 +30,8 @@ module.exports = {
     'import/no-useless-path-segments': 'error',
     'import/order': 'error',
     'n/no-missing-import': 'off',
+    'simple-import-sort/exports': 'error',
+    'simple-import-sort/imports': 'error',
   },
   settings: {
     'import/parsers': {

@@ -1,4 +1,5 @@
 import { Page } from 'playwright';
+
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface } from './article-scraper';

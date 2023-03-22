@@ -1,4 +1,5 @@
-import { chromium, Browser } from 'playwright';
+import { Browser, chromium } from 'playwright';
+
 import prisma from '../src/prisma-client';
 
 class Scraper {

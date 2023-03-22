@@ -1,7 +1,7 @@
-import prisma from '../src/prisma-client';
 import ArticleScraper from '../scraper/article-scrapers/article-scraper';
-import Google from '../src/google-client';
 import { GoToPageError } from '../scraper/utils/errors';
+import Google from '../src/google-client';
+import prisma from '../src/prisma-client';
 
 type Article = {
   id: number;

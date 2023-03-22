@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 // eslint does not like passing an async function as the second arg to app.get
 // disabling for now because this seems to work
-import express from 'express';
 import cors from 'cors';
+import express from 'express';
 import morgan from 'morgan';
 import { ParsedQs } from 'qs';
+
 import prisma from './prisma-client';
-import { sortRestaurantsByScore } from './sort-restaurant';
 import { getRestaurantById, getRestaurantsByCityId } from './resolver';
+import { sortRestaurantsByScore } from './sort-restaurant';
 
 const port = process.env.PORT || 3001;
 
