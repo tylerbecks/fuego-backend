@@ -9,7 +9,7 @@ datasource db {
 
 model Article {
   id          Int                     @id @default(autoincrement())
-  createdAt   DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt   DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime?               @map("updated_at") @db.Timestamptz(6)
   deletedAt   DateTime?               @map("deleted_at") @db.Timestamptz(6)
   url         String                  @unique(map: "unique_url") @db.VarChar
@@ -26,7 +26,7 @@ model Article {
 
 model Award {
   id           Int        @id @default(autoincrement())
-  createdAt    DateTime?  @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime?  @map("updated_at") @db.Timestamptz(6)
   deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
   restaurantId Int        @map("restaurant_id")
@@ -54,11 +54,11 @@ model City {
 
 model Restaurant {
   id        Int                     @id @default(autoincrement())
-  createdAt DateTime?               @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime?               @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime?               @map("deleted_at") @db.Timestamptz(6)
   name      String                  @db.VarChar
-  gPlaceId  String?                 @map("g_place_id") @db.VarChar
+  gPlaceId  String?                 @unique @map("g_place_id") @db.VarChar
   cityId    Int                     @map("city_id")
   cuisine   String?                 @db.VarChar
   articles  ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
@@ -69,14 +69,28 @@ model Restaurant {
 }
 
 model ArticlesToRestaurants {
-  createdAt    DateTime?  @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime?  @map("updated_at") @db.Timestamptz(6)
   deletedAt    DateTime?  @map("deleted_at") @db.Timestamptz(6)
   articleId    Int        @map("article_id")
   restaurantId Int        @map("restaurant_id")
+  description  String?    @db.VarChar
   id           Int        @id @default(dbgenerated("nextval('_articlestorestaurants_id_seq'::regclass)"))
   articles     Article    @relation("articlestorestaurantsToarticles", fields: [articleId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "articles_restaurants_article_id_fkey")
   restaurants  Restaurant @relation("articlestorestaurantsTorestaurants", fields: [restaurantId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "articles_restaurants_restaurant_id_fkey")
 
   @@map("_articlestorestaurants")
+}
+
+model PlaceIdCache {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+  placeId   String?   @map("place_id") @db.VarChar
+  name      String    @db.VarChar
+  cityId    Int       @map("city_id")
+
+  @@unique([name, cityId])
+  @@map("place_id_cache")
 }

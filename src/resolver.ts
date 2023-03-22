@@ -16,6 +16,13 @@ const article = {
   url: true,
 };
 
+type Article = {
+  id: number;
+  title: string;
+  source: string;
+  url: string;
+};
+
 export const getRestaurantById = async (restaurantId: number) => {
   const restaurantRaw = await prisma.restaurant.findUnique({
     where: { id: Number(restaurantId) },
@@ -25,9 +32,15 @@ export const getRestaurantById = async (restaurantId: number) => {
       gPlaceId: true,
       cuisine: true,
       awards: {
+        where: {
+          deletedAt: null,
+        },
         select: award,
       },
       articles: {
+        where: {
+          deletedAt: null,
+        },
         select: {
           articles: {
             select: article,
@@ -55,9 +68,15 @@ export const getRestaurantsByCityId = async (
       gPlaceId: true,
       cuisine: true,
       awards: {
+        where: {
+          deletedAt: null,
+        },
         select: award,
       },
       articles: {
+        where: {
+          deletedAt: null,
+        },
         select: {
           articles: {
             select: article,
@@ -67,7 +86,7 @@ export const getRestaurantsByCityId = async (
     },
   });
 
-  return restaurantsRaw.map((restaurant) => {
+  const restaurants = restaurantsRaw.map((restaurant) => {
     const articles = restaurant?.articles.map(({ articles }) => articles);
 
     return {
@@ -75,12 +94,13 @@ export const getRestaurantsByCityId = async (
       articles: filterArticles(articles, articleIds),
     };
   });
+
+  return restaurants.filter(
+    ({ articles, awards }) => articles.length || awards.length
+  );
 };
 
-const filterArticles = (
-  articles: Array<{ id: number; title: string; source: string; url: string }>,
-  articleIds: number[]
-) => {
+const filterArticles = (articles: Article[], articleIds: number[]) => {
   const validArticleIds = articleIds.filter((id) =>
     articles?.find((article) => article.id === id)
   );

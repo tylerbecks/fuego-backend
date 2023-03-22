@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai';
-import prisma from '../src/prisma-client.js';
+import prisma from '../src/prisma-client';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY as string,
@@ -55,81 +55,28 @@ const formatCuisineResult = (cuisine: string) => {
 };
 
 const getCuisine = async (restaurantName: string, city: string) => {
-  const prompt = `Describe the primary cuisine type for ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
+  const prompt = `Describe the primary cuisine type for the restaurant ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
   return await askGPT3(prompt, restaurantName);
 };
 
-const getCityId = async (cityName: string) => {
-  const city = await prisma.city.findFirst({
-    where: { city: cityName },
-  });
-
-  if (!city) {
-    throw new Error('City not found in database: ' + cityName);
-  }
-
-  return city.id;
-};
-
-const getCuisinesForRestaurantsInCity = async (cityName: string) => {
-  const cityId = await getCityId(cityName);
-
-  const restaurants = await prisma.restaurant.findMany({
-    where: { cityId },
+const main = async () => {
+  const restaurantsNoCuisine = await prisma.restaurant.findMany({
+    where: { cuisine: null },
+    include: {
+      cities: true,
+    },
   });
 
   console.log(
-    `${restaurants.length} restaurants without cuisine remaining in ${cityName}`
+    `Found ${restaurantsNoCuisine.length} restaurants without cuisine`
   );
 
-  for (const restaurant of restaurants) {
-    const cuisine = await getCuisine(restaurant.name, cityName);
+  for (const restaurant of restaurantsNoCuisine) {
+    const cuisine = await getCuisine(restaurant.name, restaurant.cities.city);
     await prisma.restaurant.update({
       where: { id: restaurant.id },
       data: { cuisine: cuisine ?? null },
     });
-  }
-};
-
-const sleep = (ms: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
-
-const CITIES = [
-  { city: 'austin', state: 'tx', country: 'usa' },
-  { city: 'barcelona', state: null, country: 'spain' },
-  { city: 'boston', state: 'ma', country: 'usa' },
-  { city: 'chicago', state: 'il', country: 'usa' },
-  { city: 'denver', state: 'co', country: 'usa' },
-  { city: 'houston', state: 'tx', country: 'usa' },
-  { city: 'las vegas', state: 'nv', country: 'usa' },
-  { city: 'london', state: null, country: 'united kingdom' },
-  { city: 'los angeles', state: 'ca', country: 'usa' },
-  { city: 'mexico city', state: null, country: 'mexico' },
-  { city: 'miami', state: 'fl', country: 'usa' },
-  { city: 'munich', state: null, country: 'germany' },
-  { city: 'nashville', state: 'tn', country: 'usa' },
-  { city: 'new orleans', state: 'la', country: 'usa' },
-  { city: 'new york', state: 'ny', country: 'usa' },
-  { city: 'oaxaca', state: null, country: 'mexico' },
-  { city: 'paris', state: null, country: 'france' },
-  { city: 'rome', state: null, country: 'italy' },
-  { city: 'san diego', state: 'ca', country: 'usa' },
-  { city: 'san francisco', state: 'ca', country: 'usa' },
-  { city: 'seattle', state: 'wa', country: 'usa' },
-  { city: 'tokyo', state: null, country: 'japan' },
-  { city: 'washington', state: 'dc', country: 'usa' },
-  { city: 'zurich', state: null, country: 'switzerland' },
-];
-
-const main = async () => {
-  for (const cityMetadata of CITIES) {
-    let { city } = cityMetadata;
-    console.log('====================================================');
-    console.log(`Starting city: ${city}`);
-    await getCuisinesForRestaurantsInCity(city);
   }
 };
 
