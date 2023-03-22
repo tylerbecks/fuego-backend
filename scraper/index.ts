@@ -30,8 +30,6 @@ class Scraper {
     //   .locator('meta[property="og:title"]')
     //   .getAttribute('content');
 
-    console.log({ image, description });
-
     return { image, description };
   }
 }

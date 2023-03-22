@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
+import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface } from './article-scraper';
 
 export default class CondeNast
@@ -20,7 +21,11 @@ export default class CondeNast
     }
 
     const page = await this.browser.newPage();
-    await page.goto(this.url);
+    try {
+      await page.goto(this.url);
+    } catch (error) {
+      throw new GoToPageError(this.url);
+    }
 
     const restaurants = await this.#getRestaurantLocators(page);
 

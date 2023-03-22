@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
+import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
 
 /*
@@ -42,9 +43,7 @@ export default class Thrillist
     try {
       await page.goto(this.url);
     } catch (error) {
-      console.error(error);
-      console.warn(`page.goto failed for ${this.url}`);
-      return [];
+      throw new GoToPageError(this.url);
     }
 
     const parser = await this.chooseParser(page);

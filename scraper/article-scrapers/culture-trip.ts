@@ -1,5 +1,6 @@
 import { Page } from 'playwright';
 import Browser from '../browser';
+import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
 
 // The Culture Trip articles often don't have the same number of restaurants as they say in the url or title
@@ -21,7 +22,11 @@ export default class CultureTrip
     }
 
     const page = await this.browser.newPage();
-    await page.goto(this.url);
+    try {
+      await page.goto(this.url);
+    } catch (error) {
+      throw new GoToPageError(this.url);
+    }
 
     const nextData = await this.#getNextData(page);
     if (!nextData) {

@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
+import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
 
 // NOTES
@@ -24,7 +25,11 @@ export default class Timeout
     }
 
     const page = await this.browser.newPage();
-    await page.goto(this.url);
+    try {
+      await page.goto(this.url);
+    } catch (error) {
+      throw new GoToPageError(this.url);
+    }
 
     const restaurants = await this.#getRestaurantLocators(page);
 

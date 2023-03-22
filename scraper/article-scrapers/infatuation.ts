@@ -1,6 +1,7 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
 import { ArticleScraperInterface } from './article-scraper';
+import { GoToPageError } from '../utils/errors';
 
 const RESTAURANT_CARD_SELECTOR = '[data-testid="venue-venueCard"]';
 const RESTAURANT_NAME_SELECTOR = '[data-testid="venue-venueLink"]';
@@ -23,7 +24,11 @@ export default class Infatuation
     }
 
     const page = await this.browser.newPage();
-    await page.goto(this.url);
+    try {
+      await page.goto(this.url);
+    } catch (error) {
+      throw new GoToPageError(this.url);
+    }
 
     const restaurants = await this.#getRestaurantLocators(page);
     const descriptions = await this.#getDescriptions(page);
