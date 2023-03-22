@@ -1,7 +1,7 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
-import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
+import { ArticleScraperInterface } from './article-scraper';
 
 // NOTES
 // https://www.timeout.com/tokyo/restaurants/best-restaurants-tokyo

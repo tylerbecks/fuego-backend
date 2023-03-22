@@ -249,7 +249,9 @@ const findOrCreateRestaurant = async (
   }
 
   console.log(
-    `Found cached placeId ${cachedPlaceId.placeId} for ${restaurantName}`
+    `Found cached placeId ${
+      cachedPlaceId.placeId ?? 'null'
+    } for ${restaurantName}`
   );
   return await prisma.restaurant.findFirst({
     where: {

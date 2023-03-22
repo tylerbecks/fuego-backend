@@ -1,7 +1,7 @@
 import { Page } from 'playwright';
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
-import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
+import { ArticleScraperInterface } from './article-scraper';
 
 // The Culture Trip articles often don't have the same number of restaurants as they say in the url or title
 export default class CultureTrip
@@ -74,10 +74,10 @@ export default class CultureTrip
     return nextParagraph?.content ?? null;
   }
 
-  async #getNextData(page: Page): Promise<NextData> {
-    const nextDataScriptTag = await page.locator('#__NEXT_DATA__');
+  async #getNextData(page: Page): Promise<NextData | null> {
+    const nextDataScriptTag = page.locator('#__NEXT_DATA__');
     const content = await nextDataScriptTag.textContent();
-    return content ? JSON.parse(content) : null;
+    return content ? (JSON.parse(content) as NextData) : null;
   }
 
   #getItemCards(nextData: NextData) {

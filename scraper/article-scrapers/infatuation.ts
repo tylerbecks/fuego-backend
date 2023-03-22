@@ -52,9 +52,7 @@ export default class Infatuation
   }
 
   async #getName(restaurantLocator: Locator) {
-    const headingSection = await restaurantLocator.locator(
-      RESTAURANT_NAME_SELECTOR
-    );
+    const headingSection = restaurantLocator.locator(RESTAURANT_NAME_SELECTOR);
     return await headingSection.getByRole('heading').textContent();
   }
 

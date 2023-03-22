@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
 import prisma from '../src/prisma-client';
+import axios from 'axios';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY as string,
@@ -30,11 +31,13 @@ const askGPT3 = async (prompt: string, restaurantName: string) => {
     console.log();
 
     return cuisine;
-  } catch (error: any) {
-    if (error.response) {
-      console.error(error.response.status, error.response.data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(error.response?.status, error.response?.data);
     } else {
-      console.error(`Error with OpenAI API request: ${error.message}`);
+      console.error(
+        `Error with OpenAI API request: ${(error as Error).message}`
+      );
     }
   }
 };
@@ -80,4 +83,6 @@ const main = async () => {
   }
 };
 
-main();
+(async () => {
+  await main();
+})();

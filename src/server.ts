@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+// eslint does not like passing an async function as the second arg to app.get
+// disabling for now because this seems to work
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -26,7 +29,7 @@ const sliceList = (list: unknown[], page: number, limit: number) => {
 
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
-  let { page, articleIds } = req.query;
+  const { page, articleIds } = req.query;
 
   if (!page) {
     res

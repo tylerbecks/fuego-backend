@@ -1,15 +1,18 @@
 export function log(
-  target: any,
-  propertyKey: string,
-  descriptor: PropertyDescriptor
+  target: unknown,
+  propertyKey: string | symbol,
+  descriptor: TypedPropertyDescriptor<(...args: unknown[]) => unknown>
 ) {
   const original = descriptor.value;
 
-  descriptor.value = function <T>(...args: T[]) {
+  descriptor.value = function (...args: unknown[]) {
     console.log(
-      `Calling ${propertyKey} ${args.length ? 'with' : 'no args'}`,
+      `Calling ${String(propertyKey)} ${args.length ? 'with' : 'no args'}`,
       ...args
     );
+    if (original === undefined) {
+      throw new Error('Original function is undefined');
+    }
     const result = original.call(this, ...args);
     console.log('result: ', result);
     return result;
