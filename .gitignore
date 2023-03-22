@@ -2,9 +2,3 @@ node_modules
 dist
 .env
 npm-debug.log
-/test-results/
-/playwright-report/
-/playwright/.cache/
-/test-results/
-/playwright-report/
-/playwright/.cache/

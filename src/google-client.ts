@@ -37,7 +37,6 @@ export default class Google {
       return response.data.candidates[0];
     } catch (error: any) {
       console.log('There was a google error!');
-      // console.error(error.response.data.error_message);
       console.error(error.response.data);
       throw error;
     }
