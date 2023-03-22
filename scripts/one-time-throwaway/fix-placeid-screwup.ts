@@ -1,3 +1,4 @@
+import Google from '../../src/google-client';
 import prisma from '../../src/prisma-client';
 
 // I previosuly ran refresh-articles and forgot to put the city name in the google search String
