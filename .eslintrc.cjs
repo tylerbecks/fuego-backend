@@ -9,6 +9,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:n/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -17,10 +19,28 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'import'],
   rules: {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreIIFE: true }],
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/no-deprecated': 'warn',
+    'import/no-mutable-exports': 'error',
+    'import/no-unresolved': 'error',
+    'import/no-useless-path-segments': 'error',
+    'import/order': 'error',
     'n/no-missing-import': 'off',
+  },
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+      },
+      node: true,
+    },
   },
   overrides: [
     {

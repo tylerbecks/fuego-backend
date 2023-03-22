@@ -4,8 +4,8 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import prisma from './prisma-client';
 import { ParsedQs } from 'qs';
+import prisma from './prisma-client';
 import { sortRestaurantsByScore } from './sort-restaurant';
 import { getRestaurantById, getRestaurantsByCityId } from './resolver';
 
