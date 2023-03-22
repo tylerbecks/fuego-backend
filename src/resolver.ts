@@ -60,8 +60,6 @@ export const getRestaurantsByCityId = async (
   cityId: number,
   articleIds: number[] = []
 ) => {
-  // Ideally we can only select restaurants if they have articles where deletedAt is null
-  // For now, just select them all and filter with JS below
   const restaurantsRaw = await prisma.restaurant.findMany({
     where: { cityId: Number(cityId) },
     select: {
