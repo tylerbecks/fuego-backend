@@ -16,6 +16,13 @@ const article = {
   url: true,
 };
 
+type Article = {
+  id: number;
+  title: string;
+  source: string;
+  url: string;
+};
+
 export const getRestaurantById = async (restaurantId: number) => {
   const restaurantRaw = await prisma.restaurant.findUnique({
     where: { id: Number(restaurantId) },
@@ -25,9 +32,15 @@ export const getRestaurantById = async (restaurantId: number) => {
       gPlaceId: true,
       cuisine: true,
       awards: {
+        where: {
+          deletedAt: null,
+        },
         select: award,
       },
       articles: {
+        where: {
+          deletedAt: null,
+        },
         select: {
           articles: {
             select: article,
@@ -47,17 +60,25 @@ export const getRestaurantsByCityId = async (
   cityId: number,
   articleIds: number[] = []
 ) => {
+  // Ideally we can only select restaurants if they have articles where deletedAt is null
+  // For now, just select them all and filter with JS below
   const restaurantsRaw = await prisma.restaurant.findMany({
-    where: { cityId: Number(cityId), deletedAt: null },
+    where: { cityId: Number(cityId) },
     select: {
       id: true,
       name: true,
       gPlaceId: true,
       cuisine: true,
       awards: {
+        where: {
+          deletedAt: null,
+        },
         select: award,
       },
       articles: {
+        where: {
+          deletedAt: null,
+        },
         select: {
           articles: {
             select: article,
@@ -67,7 +88,7 @@ export const getRestaurantsByCityId = async (
     },
   });
 
-  return restaurantsRaw.map((restaurant) => {
+  const restaurants = restaurantsRaw.map((restaurant) => {
     const articles = restaurant?.articles.map(({ articles }) => articles);
 
     return {
@@ -75,12 +96,13 @@ export const getRestaurantsByCityId = async (
       articles: filterArticles(articles, articleIds),
     };
   });
+
+  return restaurants.filter(
+    ({ articles, awards }) => articles.length || awards.length
+  );
 };
 
-const filterArticles = (
-  articles: Array<{ id: number; title: string; source: string; url: string }>,
-  articleIds: number[]
-) => {
+const filterArticles = (articles: Article[], articleIds: number[]) => {
   const validArticleIds = articleIds.filter((id) =>
     articles?.find((article) => article.id === id)
   );
