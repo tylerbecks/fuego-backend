@@ -1,4 +1,4 @@
-import { chromium, Browser as BrowserType } from 'playwright';
+import { Browser as BrowserType, chromium } from 'playwright';
 
 export default class Browser {
   browser: BrowserType | undefined;

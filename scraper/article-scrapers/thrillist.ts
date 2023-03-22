@@ -1,4 +1,5 @@
 import { Locator, Page } from 'playwright';
+
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';

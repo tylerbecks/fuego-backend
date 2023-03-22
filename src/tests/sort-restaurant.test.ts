@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+
 import {
-  sortRestaurantsByScore,
-  Restaurant,
   AwardSource,
+  Restaurant,
+  sortRestaurantsByScore,
 } from '../sort-restaurant';
 
 describe('test fuego score', () => {

@@ -1,4 +1,5 @@
 import { Locator, Page } from 'playwright';
+
 import Browser from '../browser';
 import { asyncFilter } from '../utils/async-helpers';
 import { GoToPageError } from '../utils/errors';

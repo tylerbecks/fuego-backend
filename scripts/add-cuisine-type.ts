@@ -1,5 +1,6 @@
-import { Configuration, OpenAIApi } from 'openai';
 import axios from 'axios';
+import { Configuration, OpenAIApi } from 'openai';
+
 import prisma from '../src/prisma-client';
 
 const configuration = new Configuration({
