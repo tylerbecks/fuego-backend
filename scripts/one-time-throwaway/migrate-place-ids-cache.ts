@@ -1,5 +1,9 @@
-import prisma from '../src/prisma-client';
+import prisma from '../../src/prisma-client';
 
+// I created the placeIds cache after creating the restaurants table.
+// Before running this script, I found all the duplicates placeIds in the restaurants table
+// and merged them by deleting one.
+// After doing that, I ran this script to populate the placeIds cache.
 const cachePlaceId = async (
   restaurantName: string,
   placeId: string,
