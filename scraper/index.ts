@@ -62,5 +62,5 @@ class Scraper {
     });
   }
 
-  scraper.close();
+  await scraper.close();
 })();

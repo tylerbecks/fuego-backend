@@ -40,11 +40,9 @@ export default class ArticleScraper {
   constructor(url: string) {
     this.url = url;
     const parsedUrl = new URL(url);
-    const secondLevelDomain = getSecondLevelDomain(
-      parsedUrl.hostname as string
-    );
+    const secondLevelDomain = getSecondLevelDomain(parsedUrl.hostname);
     if (!secondLevelDomain || !(secondLevelDomain in SCRAPERS)) {
-      throw new Error(`No scraper found for ${secondLevelDomain}`);
+      throw new Error(`No scraper found for ${secondLevelDomain || 'unknown'}`);
     }
 
     const scraper = SCRAPERS[secondLevelDomain as keyof typeof SCRAPERS];
@@ -57,7 +55,7 @@ export default class ArticleScraper {
     console.log(`Scraping ${this.url}`);
     const restaurants = await this.scraper.getRestaurants();
     console.log(`Found ${restaurants.length} restaurants`);
-    this.scraper.close();
+    await this.scraper.close();
     return restaurants;
   }
 

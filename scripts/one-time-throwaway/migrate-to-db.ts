@@ -1,3 +1,4 @@
+/* eslint-disable */
 import prisma from '../../src/prisma-client.js';
 
 type JamesBeard = {
@@ -212,7 +213,7 @@ const CITIES = [
   // { city: 'zurich', state: null, country: 'switzerland' },
 ];
 
-const main = async () => {
+const main = () => {
   for (const cityMetadata of CITIES) {
     let { city } = cityMetadata;
     console.log('====================================================');

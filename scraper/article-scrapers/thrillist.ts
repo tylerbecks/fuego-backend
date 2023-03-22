@@ -22,7 +22,7 @@ export default class Thrillist
     this.url = url;
   }
 
-  async chooseParser(page: Page) {
+  chooseParser(page: Page) {
     if (page.locator('button svg.map-icon')) {
       return new Thrillist1(page);
     } else if (page.locator('page-element--save-venue')) {
@@ -46,7 +46,7 @@ export default class Thrillist
       throw new GoToPageError(this.url);
     }
 
-    const parser = await this.chooseParser(page);
+    const parser = this.chooseParser(page);
 
     const restaurants = await parser.getRestaurants();
     return restaurants;
@@ -96,7 +96,7 @@ class Thrillist1 implements BrowserlessScraper {
       return await restaurantLocator.locator('p').textContent();
     } catch (error) {
       console.error(error);
-      console.warn(`Could not find description for ${restaurantLocator}`);
+      console.warn('Could not find description for:', restaurantLocator);
       return null;
     }
   }
@@ -172,7 +172,7 @@ class Thrillist3 implements BrowserlessScraper {
       .textContent();
 
     if (!name) {
-      console.warn(`Could not find restaurant name for ${restaurantLocator}`);
+      console.warn('Could not find description for:', restaurantLocator);
       return null;
     }
 

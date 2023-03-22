@@ -2,6 +2,7 @@ import {
   Client as GoogleMapsClient,
   PlaceInputType,
 } from '@googlemaps/google-maps-services-js';
+import axios from 'axios';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -35,9 +36,11 @@ export default class Google {
       });
 
       return response.data.candidates[0];
-    } catch (error: any) {
+    } catch (error) {
       console.log('There was a google error!');
-      console.error(error.response.data);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.status, error.response?.data);
+      }
       throw error;
     }
   }

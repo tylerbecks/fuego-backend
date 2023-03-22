@@ -87,25 +87,25 @@ describe('test fuego score', () => {
     ],
   };
 
-  it('handles an empty list', async () => {
+  it('handles an empty list', () => {
     const restaurants: Restaurant[] = [];
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     expect(sortedRestaurants).toStrictEqual([]);
   });
 
-  it('sorts james beard before an article', async () => {
+  it('sorts james beard before an article', () => {
     const restaurants: Restaurant[] = [gJelina, bavel];
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     expect(sortedRestaurants).toStrictEqual([bavel, gJelina]);
   });
 
-  it('sorts fifty best before james beard', async () => {
+  it('sorts fifty best before james beard', () => {
     const restaurants: Restaurant[] = [gJelina, alinea];
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     expect(sortedRestaurants).toStrictEqual([alinea, gJelina]);
   });
 
-  it('sorts 2 articles before michelin', async () => {
+  it('sorts 2 articles before michelin', () => {
     const restaurants: Restaurant[] = [nNaka, langers, gJelina, alinea];
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     expect(sortedRestaurants).toStrictEqual([langers, alinea, nNaka, gJelina]);

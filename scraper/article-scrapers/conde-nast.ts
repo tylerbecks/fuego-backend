@@ -48,7 +48,7 @@ export default class CondeNast
   async #getName(restaurantLocator: Locator) {
     const heading = await restaurantLocator.getByRole('heading').textContent();
     if (!heading) {
-      console.warn(`Failed to find name for restaurant: ${restaurantLocator}`);
+      console.warn('Failed to find name for restaurant:', restaurantLocator);
       return null;
     }
     return heading.replace(/Arrow$/, '');
