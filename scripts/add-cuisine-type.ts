@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from 'openai';
-import prisma from '../src/prisma-client';
 import axios from 'axios';
+import prisma from '../src/prisma-client';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY as string,

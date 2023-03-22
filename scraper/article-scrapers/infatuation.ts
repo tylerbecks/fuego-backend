@@ -1,7 +1,7 @@
 import { Locator, Page } from 'playwright';
 import Browser from '../browser';
-import { ArticleScraperInterface } from './article-scraper';
 import { GoToPageError } from '../utils/errors';
+import { ArticleScraperInterface } from './article-scraper';
 
 const RESTAURANT_CARD_SELECTOR = '[data-testid="venue-venueCard"]';
 const RESTAURANT_NAME_SELECTOR = '[data-testid="venue-venueLink"]';
