@@ -11,7 +11,7 @@ export default class Infatuation
   extends Browser
   implements ArticleScraperInterface
 {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();
@@ -31,19 +31,19 @@ export default class Infatuation
       throw new GoToPageError(this.url);
     }
 
-    const restaurants = await this.#getRestaurantLocators(page);
-    const descriptions = await this.#getDescriptions(page);
+    const restaurants = await this.getRestaurantLocators(page);
+    const descriptions = await this.getDescriptions(page);
 
     return await Promise.all(
       restaurants.map(async (r, index) => {
-        const name = await this.#getName(r);
+        const name = await this.getName(r);
         const description = await descriptions[index].textContent();
         return { name, description };
       })
     );
   }
 
-  async #getRestaurantLocators(page: Page) {
+  private async getRestaurantLocators(page: Page) {
     return await page
       .locator(RESTAURANT_CARD_SELECTOR)
       .filter({
@@ -52,13 +52,13 @@ export default class Infatuation
       .all();
   }
 
-  async #getName(restaurantLocator: Locator) {
+  private async getName(restaurantLocator: Locator) {
     const headingSection = restaurantLocator.locator(RESTAURANT_NAME_SELECTOR);
     return await headingSection.getByRole('heading').textContent();
   }
 
   // the description is a sibling to the restaurant locator
-  async #getDescriptions(page: Page) {
+  private async getDescriptions(page: Page) {
     return await page.locator(`${RESTAURANT_CARD_SELECTOR} + p`).all();
   }
 }

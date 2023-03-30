@@ -6,7 +6,7 @@ import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface } from './article-scraper';
 
 export default class Eater extends Browser implements ArticleScraperInterface {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();
@@ -26,18 +26,18 @@ export default class Eater extends Browser implements ArticleScraperInterface {
       throw new GoToPageError(this.url);
     }
 
-    const restaurants = await this.#getRestaurantLocators(page);
+    const restaurants = await this.getRestaurantLocators(page);
 
     return await Promise.all(
       restaurants.map(async (r) => {
-        const name = await this.#getName(r);
-        const description = await this.#getDescription(r);
+        const name = await this.getName(r);
+        const description = await this.getDescription(r);
         return { name, description };
       })
     );
   }
 
-  async #getRestaurantLocators(page: Page) {
+  private async getRestaurantLocators(page: Page) {
     const cards = await page.locator('main section.c-mapstack__card').all();
 
     return asyncFilter(cards, async (card) => {
@@ -50,12 +50,12 @@ export default class Eater extends Browser implements ArticleScraperInterface {
     });
   }
 
-  async #getName(restaurantLocator: Locator) {
+  private async getName(restaurantLocator: Locator) {
     const heading = restaurantLocator.getByRole('heading');
     return await heading.textContent();
   }
 
-  async #getDescription(restaurantLocator: Locator) {
+  private async getDescription(restaurantLocator: Locator) {
     return await restaurantLocator.locator('p').first().textContent();
   }
 }

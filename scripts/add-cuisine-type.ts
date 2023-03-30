@@ -1,47 +1,5 @@
-import axios from 'axios';
-import { Configuration, OpenAIApi } from 'openai';
-
 import prisma from '../src/prisma-client';
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY as string,
-});
-
-const openai = new OpenAIApi(configuration);
-
-const askGPT3 = async (prompt: string, restaurantName: string) => {
-  if (!configuration.apiKey) {
-    throw new Error(
-      'OpenAI API key not configured, please follow instructions in README.md'
-    );
-  }
-
-  try {
-    const completion = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.3,
-    });
-
-    const firstChoice = completion.data.choices[0].message?.content as string;
-    const cuisine = formatCuisineResult(firstChoice);
-
-    console.log(`RESTAURANT: ${restaurantName}`);
-    console.log(`CUISINE: ${cuisine}`);
-    // add a new line
-    console.log();
-
-    return cuisine;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.status, error.response?.data);
-    } else {
-      console.error(
-        `Error with OpenAI API request: ${(error as Error).message}`
-      );
-    }
-  }
-};
+import askGPT from './utils/open-ai';
 
 const formatCuisineResult = (cuisine: string) => {
   cuisine = cuisine.replaceAll('\n', '');
@@ -60,7 +18,13 @@ const formatCuisineResult = (cuisine: string) => {
 
 const getCuisine = async (restaurantName: string, city: string) => {
   const prompt = `Describe the primary cuisine type for the restaurant ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
-  return await askGPT3(prompt, restaurantName);
+  const openAiResponse = await askGPT(prompt);
+  console.log(`RESTAURANT: ${restaurantName}`);
+  const cuisine = formatCuisineResult(openAiResponse);
+  // add a new line
+  console.log();
+
+  return cuisine;
 };
 
 const main = async () => {

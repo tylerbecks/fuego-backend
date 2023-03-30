@@ -59,11 +59,12 @@ model Restaurant {
   deletedAt DateTime?               @map("deleted_at") @db.Timestamptz(6)
   name      String                  @db.VarChar
   gPlaceId  String?                 @unique @map("g_place_id") @db.VarChar
-  cityId    Int                     @map("city_id")
+  cityId    Int?                    @map("city_id")
   cuisine   String?                 @db.VarChar
+  city      String?                 @db.VarChar
   articles  ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
   awards    Award[]
-  cities    City                    @relation("citiesTorestaurants", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")
+  cities    City?                   @relation("citiesTorestaurants", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")
 
   @@map("restaurants")
 }
@@ -89,7 +90,8 @@ model PlaceIdCache {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
   placeId   String?   @map("place_id") @db.VarChar
   name      String    @db.VarChar
-  cityId    Int       @map("city_id")
+  cityId    Int?      @map("city_id")
+  city      String?
 
   @@unique([name, cityId])
   @@map("place_id_cache")

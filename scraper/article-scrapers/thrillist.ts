@@ -16,7 +16,7 @@ export default class Thrillist
   extends Browser
   implements ArticleScraperInterface
 {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();
@@ -60,7 +60,7 @@ interface BrowserlessScraper {
 
 // Example: https://www.thrillist.com/eat/boston/best-restaurants-boston
 class Thrillist1 implements BrowserlessScraper {
-  page: Page;
+  page;
 
   constructor(page: Page) {
     console.log('Using Thrillist1 parser');
@@ -104,7 +104,7 @@ class Thrillist1 implements BrowserlessScraper {
 }
 
 class Thrillist2 implements BrowserlessScraper {
-  page: Page;
+  page;
 
   constructor(page: Page) {
     console.log('Using Thrillist2 parser');
@@ -138,7 +138,7 @@ class Thrillist2 implements BrowserlessScraper {
 
 // Example: https://www.thrillist.com/eat/nation/best-restaurants-in-munich-the-eight-cool-places-to-eat-thrilist-munich
 class Thrillist3 implements BrowserlessScraper {
-  page: Page;
+  page;
 
   constructor(page: Page) {
     console.log('Using Thrillist3 parser');

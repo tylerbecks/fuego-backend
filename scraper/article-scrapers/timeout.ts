@@ -12,7 +12,7 @@ export default class Timeout
   extends Browser
   implements ArticleScraperInterface
 {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();

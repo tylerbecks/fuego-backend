@@ -1,15 +1,12 @@
+import { Prisma } from '@prisma/client';
+
 import ArticleScraper from '../scraper/article-scrapers/article-scraper';
 import { GoToPageError } from '../scraper/utils/errors';
-import Google from '../src/google-client';
 import prisma from '../src/prisma-client';
+import { findOrCreateRestaurant } from './utils/db';
 
-type Article = {
-  id: number;
-  cityId: number;
-  url: string;
-  title: string;
-  updatedAt: Date | null;
-};
+type Articles = Prisma.PromiseReturnType<typeof fetchAllArticles>;
+type Article = Articles[number];
 
 type Restaurant = {
   id: number;
@@ -17,7 +14,7 @@ type Restaurant = {
 };
 
 class ArticleRefresher {
-  now: Date;
+  now;
 
   constructor() {
     this.now = new Date();
@@ -177,113 +174,6 @@ const fetchAllArticles = async () =>
       url: true,
       title: true,
       updatedAt: true,
-    },
-  });
-
-// Always fetch restaurants by their cached restaurantId
-const findOrCreateRestaurant = async (
-  restaurantName: string,
-  cityId: number
-) => {
-  const cachedPlaceId = await prisma.placeIdCache.findFirst({
-    where: {
-      name: {
-        equals: restaurantName,
-        mode: 'insensitive',
-      },
-      cityId,
-    },
-  });
-
-  const restaurantPreviouslyCachedWithNullPlaceId =
-    cachedPlaceId?.placeId === null;
-
-  if (restaurantPreviouslyCachedWithNullPlaceId) {
-    console.log(`Found null cached placeId for ${restaurantName}`);
-    return findRestaurantWithNoPlaceId(restaurantName, cityId);
-  }
-
-  // placeId never been cached
-  if (!cachedPlaceId) {
-    console.log(`No cached placeId for ${restaurantName}. Creating entry...`);
-    const google = new Google();
-    const city = await prisma.city.findUnique({
-      where: {
-        id: cityId,
-      },
-    });
-
-    const placeId = await google.findPlaceFromText(
-      `${restaurantName} ${city?.city || ''}`
-    );
-
-    if (!placeId.place_id) {
-      console.log(`No placeId found for ${restaurantName}`);
-    }
-
-    await cachePlaceIdForRestaurant(restaurantName, cityId, placeId.place_id);
-
-    if (placeId.place_id !== undefined) {
-      const restaurantWithSamePlaceId = await prisma.restaurant.findFirst({
-        where: {
-          gPlaceId: placeId.place_id ?? null,
-        },
-      });
-
-      if (restaurantWithSamePlaceId) {
-        console.log(
-          `After caching id, found restaurant with same placeId ${placeId.place_id}`
-        );
-        return restaurantWithSamePlaceId;
-      }
-    }
-
-    console.log(`Creating restaurant ${restaurantName}`);
-    return await prisma.restaurant.create({
-      data: {
-        name: restaurantName,
-        gPlaceId: placeId.place_id ?? null,
-        cityId,
-      },
-    });
-  }
-
-  console.log(
-    `Found cached placeId ${
-      cachedPlaceId.placeId ?? 'null'
-    } for ${restaurantName}`
-  );
-  return await prisma.restaurant.findFirst({
-    where: {
-      gPlaceId: cachedPlaceId.placeId,
-    },
-  });
-};
-
-const cachePlaceIdForRestaurant = async (
-  restaurantName: string,
-  cityId: number,
-  placeId: string | undefined
-) =>
-  await prisma.placeIdCache.create({
-    data: {
-      name: restaurantName,
-      cityId,
-      placeId: placeId ?? null,
-    },
-  });
-
-const findRestaurantWithNoPlaceId = async (
-  restaurantName: string,
-  cityId: number
-) =>
-  await prisma.restaurant.findFirst({
-    where: {
-      name: {
-        equals: restaurantName,
-        mode: 'insensitive',
-      },
-      cityId,
     },
   });
 
