@@ -1,6 +1,6 @@
 import { Browser as BrowserType, chromium } from 'playwright';
 
-export default class Browser {
+export default abstract class Browser {
   browser: BrowserType | undefined;
 
   async launch() {

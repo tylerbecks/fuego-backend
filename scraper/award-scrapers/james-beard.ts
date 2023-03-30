@@ -20,6 +20,14 @@ const DESIGN_ICON_IGNORES = new Set(['Debbie Gold', 'Alex Von Bidder']);
 const BASE_URL =
   'https://www.jamesbeard.org/awards/search?ranks%5BWinner%5D=1&categories%5BRestaurant+%26+Chef%5D=1';
 
+type JamesBeardAward = {
+  award: string;
+  year: number;
+  restaurant: string;
+  cityState: string;
+  chef: string | void | null;
+};
+
 export default class JamesBeardScraper extends Browser {
   async getWinners() {
     await this.launch();
@@ -29,17 +37,10 @@ export default class JamesBeardScraper extends Browser {
 
     const page = await this.browser.newPage();
 
-    type uniqueAwardsType = {
-      [award: string]: Set<string | null>;
-    };
-    const uniqueAwards: uniqueAwardsType = {
-      bestChef: new Set(),
-    };
-
-    const uniqueDataTemplates = new Set();
-
+    let awards: JamesBeardAward[] = [];
     let morePagesExist = true;
     let currentPageNum = 1;
+
     while (morePagesExist) {
       const url = `${BASE_URL}&page=${currentPageNum}`;
       console.log(`Navigating to ${url}`);
@@ -63,8 +64,12 @@ export default class JamesBeardScraper extends Browser {
               : new RestaurantExtractor();
 
           const restaurant = await extractor.getRestaurant(card);
-          const city = await extractor.getCity(card);
+          let cityState = await extractor.getCity(card);
           const chef = await extractor.getChef(card);
+
+          if (cityState === '') {
+            cityState = cityFillIn(restaurant, award, year);
+          }
 
           // Design icon has some titles that are people with no restaurants, so ignore those
           // https://www.jamesbeard.org/awards/search?categories%5BRestaurant+%26+Chef%5D=1&ranks%5BWinner%5D=1&year=&keyword=Design+Icon
@@ -80,7 +85,7 @@ export default class JamesBeardScraper extends Browser {
             award,
             year,
             restaurant,
-            city,
+            cityState,
             chef,
           };
         })
@@ -88,18 +93,17 @@ export default class JamesBeardScraper extends Browser {
 
       const filteredAwards = awardMetadas.filter(
         (awardMetadata) => awardMetadata !== null
-      );
+      ) as JamesBeardAward[];
 
-      console.log(filteredAwards);
+      awards = [...awards, ...filteredAwards];
 
       currentPageNum++;
       morePagesExist = await this.doMorePagesExist(page);
     }
 
-    console.log(uniqueAwards);
-    console.log(uniqueDataTemplates);
+    void this.browser.close();
 
-    await this.browser.close();
+    return awards;
   }
 
   async getCards(page: Page) {
@@ -142,6 +146,126 @@ export default class JamesBeardScraper extends Browser {
     return !nextButtonClass.includes('disabled');
   }
 }
+
+// For a small number of awards, the website ommitted the city. This function manually fills it back in.
+const cityFillIn = (
+  restaurant: string | null,
+  award: string,
+  year: number | null
+) => {
+  const CITY_STATE_MANUAL_EDITS = [
+    {
+      award: 'Best Chef: South',
+      year: 2022,
+      restaurant: 'Automatic Seafood and Oysters',
+      cityState: 'Birmingham, Alabama',
+      chef: 'Adam Evans',
+    },
+    {
+      award: 'Best Chef: Southwest',
+      year: 2022,
+      restaurant: 'Sazón',
+      cityState: 'Santa Fe, New Mexico',
+      chef: 'Fernando Olea',
+    },
+    {
+      award: 'Best Chef: Mid-Atlantic',
+      year: 2022,
+      restaurant: 'South Philly Barbacoa',
+      cityState: 'Philadelphia, PA',
+      chef: 'Cristina Martinez',
+    },
+    {
+      award: 'Best Chef: Mountain',
+      year: 2022,
+      restaurant: 'Annette',
+      cityState: 'Aurora, CO',
+      chef: 'Caroline Glover',
+    },
+    {
+      award: 'Best Chef: California',
+      year: 2022,
+      restaurant: "Mister Jiu's",
+      cityState: 'San Francisco, CA',
+      chef: 'Brandon Jew',
+    },
+    {
+      award: 'Best Chef: Great Lakes',
+      year: 2022,
+      restaurant: 'Virtue Restaurant & Bar',
+      cityState: 'Chicago, IL',
+      chef: 'Erick Williams',
+    },
+    {
+      award: 'Best Chef: Midwest',
+      year: 2022,
+      restaurant: 'The Diplomat',
+      cityState: 'Milwaukee, WI',
+      chef: 'Dane Baldwin',
+    },
+    {
+      award: 'Best Chef: New York State',
+      year: 2022,
+      restaurant: 'Dhamaka',
+      cityState: 'New York, NY',
+      chef: 'Chintan Pandya',
+    },
+    {
+      award: 'Best Chef: Texas',
+      year: 2022,
+      restaurant: 'El Naranjo',
+      cityState: 'Austin, TX',
+      chef: 'Iliana de la Vega',
+    },
+    {
+      award: 'Best Chef: Southeast',
+      year: 2022,
+      restaurant: 'SALTBOX Seafood Joint',
+      cityState: 'Durham, North Carolina',
+      chef: 'Ricky Moore',
+    },
+    {
+      award: 'Best Chef: Northeast',
+      year: 2022,
+      restaurant: 'Saap',
+      cityState: 'Randolph, VT',
+      chef: 'Nisachon Morgan',
+    },
+    {
+      award: "America's Classics",
+      year: 2010,
+      restaurant: "Mary & Tito's Cafe",
+      cityState: 'Albuquerque, NM',
+      chef: undefined,
+    },
+    {
+      award: "America's Classics",
+      year: 2010,
+      restaurant: "Al's French Frys",
+      cityState: 'South Burlington, VT',
+      chef: undefined,
+    },
+    {
+      award: 'Outstanding Wine Service',
+      year: 2000,
+      restaurant: 'Rubicon',
+      cityState: 'Burlingame, California',
+      chef: undefined,
+    },
+  ];
+
+  const found = CITY_STATE_MANUAL_EDITS.find((editedAward) => {
+    if (
+      award === editedAward.award &&
+      year === editedAward.year &&
+      restaurant === editedAward.restaurant
+    ) {
+      return true;
+    }
+  });
+
+  return found ? found.cityState : null;
+};
 
 class ChefExtractor {
   async getRestaurant(card: Locator) {

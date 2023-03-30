@@ -8,7 +8,7 @@ export default class CondeNast
   extends Browser
   implements ArticleScraperInterface
 {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();

@@ -9,7 +9,7 @@ export default class CultureTrip
   extends Browser
   implements ArticleScraperInterface
 {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();

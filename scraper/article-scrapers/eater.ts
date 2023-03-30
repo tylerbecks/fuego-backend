@@ -6,7 +6,7 @@ import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface } from './article-scraper';
 
 export default class Eater extends Browser implements ArticleScraperInterface {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();

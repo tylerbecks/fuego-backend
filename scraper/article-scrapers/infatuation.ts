@@ -11,7 +11,7 @@ export default class Infatuation
   extends Browser
   implements ArticleScraperInterface
 {
-  url: string;
+  url;
 
   constructor(url: string) {
     super();

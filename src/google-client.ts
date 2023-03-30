@@ -14,7 +14,7 @@ dotenv.config();
 //  - textSearch 🚫 (this returns all the fields and bills accordingly)
 
 export default class Google {
-  client: GoogleMapsClient;
+  client;
 
   constructor() {
     this.client = new GoogleMapsClient();
@@ -46,3 +46,11 @@ export default class Google {
     }
   }
 }
+
+// (async function () {
+//   const google = new Google();
+//   const response = await google.findPlaceFromText(
+//     'Rustic Canyon restaurant Santa Monica'
+//   );
+//   console.log(response);
+// })();

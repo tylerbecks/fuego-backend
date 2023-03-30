@@ -34,8 +34,8 @@ const getSecondLevelDomain = (url: string) =>
   url.replace(topLevelDomains, '').split('.').pop();
 
 export default class ArticleScraper {
-  url: string;
-  scraper: ArticleScraperInterface;
+  url;
+  scraper;
 
   constructor(url: string) {
     this.url = url;
