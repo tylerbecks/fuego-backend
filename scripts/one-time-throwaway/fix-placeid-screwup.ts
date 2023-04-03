@@ -1,6 +1,6 @@
 import Google from '../../src/google-client';
-import prisma from '../../src/prisma-client';
 import logger from '../../src/logger';
+import prisma from '../../src/prisma-client';
 
 // I previosuly ran refresh-articles and forgot to put the city name in the google search String
 // So it may have created the wrong placeIds. This script fixes that.
@@ -15,6 +15,10 @@ import logger from '../../src/logger';
   });
 
   for (const cachedPlaceId of placeIds) {
+    if (cachedPlaceId.cityId === null) {
+      throw new Error('placeId is null');
+    }
+
     const city = await prisma.city.findUnique({
       where: {
         id: cachedPlaceId.cityId,

@@ -42,6 +42,33 @@ export default class Google {
     } catch (error) {
       logger.error('There was a google error!');
       if (axios.isAxiosError(error)) {
+        console.log(error);
+        console.error(error.response?.status, error.response?.data);
+      }
+      throw error;
+    }
+  }
+
+  async refreshPlaceId(placeId: string): Promise<{ place_id: string | null }> {
+    if (!process.env.GOOGLE_API_KEY) {
+      throw new Error('GOOGLE_API_KEY env variable not set');
+    }
+
+    logger.info(`Refreshing placeId: ${placeId}`);
+
+    try {
+      const response = await this.client.placeDetails({
+        params: {
+          place_id: placeId,
+          key: process.env.GOOGLE_API_KEY,
+          fields: ['place_id'],
+        },
+      });
+
+      return response.data.result as { place_id: string | null };
+    } catch (error) {
+      logger.error('There was a google error!');
+      if (axios.isAxiosError(error)) {
         console.error(error.response?.status, error.response?.data);
       }
       throw error;

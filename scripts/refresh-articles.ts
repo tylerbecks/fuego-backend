@@ -2,10 +2,9 @@ import { Prisma } from '@prisma/client';
 
 import ArticleScraper from '../scraper/article-scrapers/article-scraper';
 import { GoToPageError } from '../scraper/utils/errors';
+import logger from '../src/logger';
 import prisma from '../src/prisma-client';
 import { findOrCreateRestaurant } from './utils/db';
-
-import logger from '../src/logger';
 
 type Articles = Prisma.PromiseReturnType<typeof fetchAllArticles>;
 type Article = Articles[number];

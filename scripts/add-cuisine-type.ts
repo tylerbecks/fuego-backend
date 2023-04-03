@@ -1,6 +1,6 @@
+import logger from '../src/logger';
 import prisma from '../src/prisma-client';
 import askGPT from './utils/open-ai';
-import logger from '../src/logger';
 
 const formatCuisineResult = (cuisine: string) => {
   cuisine = cuisine.replaceAll('\n', '');
@@ -41,7 +41,10 @@ const main = async () => {
   );
 
   for (const restaurant of restaurantsNoCuisine) {
-    const cuisine = await getCuisine(restaurant.name, restaurant.cities.city);
+    const cuisine = await getCuisine(
+      restaurant.name,
+      restaurant.cities?.city ?? ''
+    );
     await prisma.restaurant.update({
       where: { id: restaurant.id },
       data: { cuisine: cuisine ?? null },

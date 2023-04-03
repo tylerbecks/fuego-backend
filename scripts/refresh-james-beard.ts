@@ -1,8 +1,8 @@
 import JamesBeardScraper from '../scraper/award-scrapers/james-beard';
+import logger from '../src/logger';
 import prisma from '../src/prisma-client';
 import { findOrCreateRestaurant } from './utils/db';
 import askGPT from './utils/open-ai';
-import logger from '../src/logger';
 
 const SOURCE_ID = 'james_beard';
 

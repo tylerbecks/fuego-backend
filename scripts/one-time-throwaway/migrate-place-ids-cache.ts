@@ -1,5 +1,5 @@
-import prisma from '../../src/prisma-client';
 import logger from '../../src/logger';
+import prisma from '../../src/prisma-client';
 
 // I created the placeIds cache after creating the restaurants table.
 // Before running this script, I found all the duplicates placeIds in the restaurants table
@@ -34,6 +34,7 @@ async () => {
   });
   for (const restaurant of uncachedRestaurants) {
     if (!restaurant.gPlaceId) continue;
+    if (!restaurant.cityId) continue;
     await cachePlaceId(restaurant.name, restaurant.gPlaceId, restaurant.cityId);
   }
 };

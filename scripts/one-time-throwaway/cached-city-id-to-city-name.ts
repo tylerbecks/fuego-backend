@@ -1,5 +1,5 @@
-import prisma from '../../src/prisma-client';
 import logger from '../../src/logger';
+import prisma from '../../src/prisma-client';
 
 const migrate = async () => {
   logger.info('Migrating cached city IDs to city names...');

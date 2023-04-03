@@ -1,5 +1,5 @@
 {
-  "include": ["src", "scraper"],
+  "include": ["src", "scraper", "scripts"],
   "compilerOptions": {
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
