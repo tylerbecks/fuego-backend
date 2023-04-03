@@ -2,6 +2,7 @@ import JamesBeardScraper from '../scraper/award-scrapers/james-beard';
 import prisma from '../src/prisma-client';
 import { findOrCreateRestaurant } from './utils/db';
 import askGPT from './utils/open-ai';
+import logger from '../src/logger';
 
 const SOURCE_ID = 'james_beard';
 
@@ -15,17 +16,17 @@ class JamesBeardRefresher {
 
     for (let i = 0; i < jamesBeardAwards.length; i++) {
       const award = jamesBeardAwards[i];
-      console.log(`Award ${i + 1} of ${jamesBeardAwards.length}`);
+      logger.verbose(`Award ${i + 1} of ${jamesBeardAwards.length}`);
 
       const { cityState } = award;
-      console.log(
+      logger.info(
         `James Beard: ${award.restaurant}, ${award.award}, ${award.year}, ${cityState}`
       );
 
       const existingCity = await cityMatcher.matchCityFromDb(cityState);
 
       if (existingCity) {
-        console.log(`Found city ${existingCity.city}`);
+        logger.info(`Found city ${existingCity.city}`);
       }
 
       const restaurant = await findOrCreateRestaurant(
@@ -45,11 +46,11 @@ class JamesBeardRefresher {
       });
 
       if (existingAward) {
-        console.log(`Award already exists, continuing`);
+        logger.warn(`Award already exists, continuing`);
         continue;
       }
 
-      console.log(`Creating award`);
+      logger.info(`Creating award`);
       await prisma.award.create({
         data: {
           restaurantId: restaurant.id,
@@ -263,14 +264,14 @@ class CityNameMatcher {
 
     // Check if city previously cached as false, meaning no matches were found in the code below
     if (this.openAIResponseCache[cityState] === false) {
-      console.log(`${cityState} cached as false, returning null`);
+      logger.info(`${cityState} cached as false, returning null`);
       return null;
     }
 
     // Check if city previously cached as cityFromDB, meaning a match was found in the code below
     if (this.openAIResponseCache[cityState]) {
-      console.log(`${cityState} cached with value:`);
-      console.log(this.openAIResponseCache[cityState]);
+      logger.info(`${cityState} cached with value:`);
+      logger.info(this.openAIResponseCache[cityState]);
       return this.openAIResponseCache[cityState] as City;
     }
 
@@ -283,7 +284,7 @@ class CityNameMatcher {
       },
     });
 
-    console.log(`cachedCityId: ${JSON.stringify(cachedCityId)}`);
+    logger.info(`cachedCityId: ${JSON.stringify(cachedCityId)}`);
 
     if (cachedCityId && cachedCityId.cityId) {
       const city = await prisma.city.findFirst({
@@ -297,7 +298,7 @@ class CityNameMatcher {
       });
 
       if (city) {
-        console.log(`Found existing city. Caching and returning ${city.city}`);
+        logger.info(`Found existing city. Caching and returning ${city.city}`);
         this.openAIResponseCache[cityState] = city;
         return city;
       }
@@ -319,11 +320,11 @@ class CityNameMatcher {
     });
 
     if (existingCity) {
-      console.log(
+      logger.info(
         `Found exact city match in DB. Caching and returning ${existingCity.city}`
       );
       this.openAIResponseCache[cityState] = existingCity;
-      console.log(this.openAIResponseCache);
+      logger.info(this.openAIResponseCache);
       return existingCity;
     }
 
@@ -334,15 +335,15 @@ class CityNameMatcher {
       const prompt = `Is ${cityState} in ${cityNameFromDB}? Just return yes or no.`;
       const response = await askGPT(prompt);
       if (response.match(/yes/i)) {
-        console.log(`✅ Found city match! Caching and returning ${city.city}`);
+        logger.info(`✅ Found city match! Caching and returning ${city.city}`);
         this.openAIResponseCache[cityState] = city;
-        console.log(this.openAIResponseCache);
+        logger.info(this.openAIResponseCache);
         return city;
       }
     }
 
     this.openAIResponseCache[cityState] = false;
-    console.log(this.openAIResponseCache);
+    logger.info(this.openAIResponseCache);
 
     return null;
   }

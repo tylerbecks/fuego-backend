@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 
+import logger from '../../src/logger';
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
@@ -63,7 +64,7 @@ class Thrillist1 implements BrowserlessScraper {
   page;
 
   constructor(page: Page) {
-    console.log('Using Thrillist1 parser');
+    logger.info('Using Thrillist1 parser');
     this.page = page;
   }
 
@@ -96,8 +97,8 @@ class Thrillist1 implements BrowserlessScraper {
     try {
       return await restaurantLocator.locator('p').textContent();
     } catch (error) {
-      console.error(error);
-      console.warn('Could not find description for:', restaurantLocator);
+      logger.error(error);
+      logger.warn('Could not find description for:', restaurantLocator);
       return null;
     }
   }
@@ -107,7 +108,7 @@ class Thrillist2 implements BrowserlessScraper {
   page;
 
   constructor(page: Page) {
-    console.log('Using Thrillist2 parser');
+    logger.info('Using Thrillist2 parser');
     this.page = page;
   }
 
@@ -141,7 +142,7 @@ class Thrillist3 implements BrowserlessScraper {
   page;
 
   constructor(page: Page) {
-    console.log('Using Thrillist3 parser');
+    logger.info('Using Thrillist3 parser');
     this.page = page;
   }
 

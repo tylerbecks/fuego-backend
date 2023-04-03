@@ -1,5 +1,6 @@
 import JamesBeardScraper from '../../scraper/award-scrapers/james-beard';
 import prisma from '../../src/prisma-client';
+import logger from '../../src/logger';
 
 // When I first scraped james beard, I saved the city in the placeIdCache instead of the cityState
 // That's a problem for cities that have the same name in different states
@@ -11,7 +12,7 @@ const main = async () => {
 
   for (let i = 0; i < jamesBeardAwards.length; i++) {
     const award = jamesBeardAwards[i];
-    console.log(`Award ${i + 1} of ${jamesBeardAwards.length}`);
+    logger.info(`Award ${i + 1} of ${jamesBeardAwards.length}`);
     const cachedRecord = await prisma.placeIdCache.findFirst({
       where: {
         name: award.restaurant,
@@ -19,7 +20,7 @@ const main = async () => {
     });
 
     if (cachedRecord) {
-      console.log(
+      logger.info(
         `Found cached record for ${award.restaurant}, city: ${
           cachedRecord.city ?? 'null'
         }`
@@ -35,7 +36,7 @@ const main = async () => {
       });
 
       if (cachedRecord.placeId) {
-        console.log(`Found placeId ${cachedRecord.placeId}`);
+        logger.info(`Found placeId ${cachedRecord.placeId}`);
         await prisma.restaurant.update({
           where: {
             gPlaceId: cachedRecord.placeId,
@@ -55,7 +56,7 @@ const main = async () => {
         });
       }
     } else {
-      console.log(`No cached record for ${award.restaurant}`);
+      logger.info(`No cached record for ${award.restaurant}`);
       continue;
     }
   }

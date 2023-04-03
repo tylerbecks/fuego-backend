@@ -1,3 +1,5 @@
+import logger from '../../src/logger';
+
 export function log(
   target: unknown,
   propertyKey: string | symbol,
@@ -6,7 +8,7 @@ export function log(
   const original = descriptor.value;
 
   descriptor.value = function (...args: unknown[]) {
-    console.log(
+    logger.info(
       `Calling ${String(propertyKey)} ${args.length ? 'with' : 'no args'}`,
       ...args
     );
@@ -14,7 +16,7 @@ export function log(
       throw new Error('Original function is undefined');
     }
     const result = original.call(this, ...args);
-    console.log('result: ', result);
+    logger.info('result: ', result);
     return result;
   };
 }

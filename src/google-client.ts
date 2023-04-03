@@ -5,6 +5,8 @@ import {
 import axios from 'axios';
 import * as dotenv from 'dotenv';
 
+import logger from './logger';
+
 dotenv.config();
 
 // https://googlemaps.github.io/google-maps-services-js/index.html#new-googlemapsgoogle-maps-services-js
@@ -25,7 +27,7 @@ export default class Google {
       throw new Error('GOOGLE_API_KEY env variable not set');
     }
 
-    console.log(`Querying google for: ${searchString}`);
+    logger.info(`Querying google for: ${searchString}`);
 
     try {
       const response = await this.client.findPlaceFromText({
@@ -38,7 +40,7 @@ export default class Google {
 
       return response.data.candidates[0];
     } catch (error) {
-      console.log('There was a google error!');
+      logger.error('There was a google error!');
       if (axios.isAxiosError(error)) {
         console.error(error.response?.status, error.response?.data);
       }

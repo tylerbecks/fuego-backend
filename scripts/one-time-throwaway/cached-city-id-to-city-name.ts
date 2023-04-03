@@ -1,7 +1,8 @@
 import prisma from '../../src/prisma-client';
+import logger from '../../src/logger';
 
 const migrate = async () => {
-  console.log('Migrating cached city IDs to city names...');
+  logger.info('Migrating cached city IDs to city names...');
   const placeIdCache = await prisma.placeIdCache.findMany({
     where: {
       city: null,
@@ -18,10 +19,10 @@ const migrate = async () => {
     const maybeCachedCity = cityToCityIdMap.get(placeIdCacheItem.cityId);
 
     if (maybeCachedCity) {
-      console.log(
+      logger.info(
         `Found cached city: ${maybeCachedCity} for city ID: ${placeIdCacheItem.cityId}`
       );
-      console.log(
+      logger.info(
         `Setting city: ${maybeCachedCity} for city ID: ${placeIdCacheItem.cityId}`
       );
 
@@ -46,12 +47,12 @@ const migrate = async () => {
       throw new Error('City is null');
     }
 
-    console.log(
+    logger.info(
       `Caching city: ${city.city} for city ID: ${placeIdCacheItem.cityId}`
     );
     cityToCityIdMap.set(placeIdCacheItem.cityId, city.city);
 
-    console.log(
+    logger.info(
       `Setting city: ${city.city} for city ID: ${placeIdCacheItem.cityId}`
     );
     await prisma.placeIdCache.update({

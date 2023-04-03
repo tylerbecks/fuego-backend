@@ -1,5 +1,6 @@
 import Google from '../../src/google-client';
 import prisma from '../../src/prisma-client';
+import logger from '../../src/logger';
 
 // Since I am basically using the city table as a wrapper for pages in the frontend, it doesn't
 // accomodate when I'm scraping restaurants without existing cities. So it's better to
@@ -30,7 +31,7 @@ export const findOrCreateRestaurant = async (
     cachedPlaceId?.placeId === null;
 
   if (restaurantPreviouslyCachedWithNullPlaceId) {
-    console.log(`Found null cached placeId for ${restaurantName}`);
+    logger.info(`Found null cached placeId for ${restaurantName}`);
     const restaurant = await findRestaurantWithNoPlaceId(
       restaurantName,
       cityId
@@ -48,7 +49,7 @@ export const findOrCreateRestaurant = async (
 
   // optimistic case, cache id previously cached with value
   if (cachedPlaceId) {
-    console.log(
+    logger.info(
       `Found cached placeId ${
         cachedPlaceId.placeId as string
       } for ${restaurantName}`
@@ -72,7 +73,7 @@ export const findOrCreateRestaurant = async (
   }
 
   // placeId never been cached
-  console.log(`No cached placeId for ${restaurantName}. Creating entry...`);
+  logger.info(`No cached placeId for ${restaurantName}. Creating entry...`);
   const google = new Google();
   const cityName = city ? city : await getCityName(cityId as number);
 
@@ -81,7 +82,7 @@ export const findOrCreateRestaurant = async (
   );
 
   if (!placeId.place_id) {
-    console.log(`No placeId found for ${restaurantName}`);
+    logger.warn(`No placeId found for ${restaurantName}`);
   }
 
   await cachePlaceIdForRestaurant(
@@ -99,14 +100,14 @@ export const findOrCreateRestaurant = async (
     });
 
     if (restaurantWithSamePlaceId) {
-      console.log(
+      logger.info(
         `After caching id, found restaurant with same placeId ${placeId.place_id}`
       );
       return restaurantWithSamePlaceId;
     }
   }
 
-  console.log(`⚙️ Creating restaurant ${restaurantName}`);
+  logger.info(`⚙️ Creating restaurant ${restaurantName}`);
   return await prisma.restaurant.create({
     data: {
       name: restaurantName,

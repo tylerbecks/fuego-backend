@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 
+import logger from '../../src/logger';
 import Browser from '../browser';
 
 const IGNORE_AWARDS = new Set([
@@ -43,7 +44,7 @@ export default class JamesBeardScraper extends Browser {
 
     while (morePagesExist) {
       const url = `${BASE_URL}&page=${currentPageNum}`;
-      console.log(`Navigating to ${url}`);
+      logger.info(`Navigating to ${url}`);
       await page.goto(url);
 
       const cards = await this.getCards(page);
