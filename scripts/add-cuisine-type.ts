@@ -1,5 +1,6 @@
 import prisma from '../src/prisma-client';
 import askGPT from './utils/open-ai';
+import logger from '../src/logger';
 
 const formatCuisineResult = (cuisine: string) => {
   cuisine = cuisine.replaceAll('\n', '');
@@ -19,10 +20,10 @@ const formatCuisineResult = (cuisine: string) => {
 const getCuisine = async (restaurantName: string, city: string) => {
   const prompt = `Describe the primary cuisine type for the restaurant ${restaurantName} in ${city} in 4 words or less. Examples: French seafood, gourmet donuts, Greek fast-casual street food. Don't use the word cuisine.`;
   const openAiResponse = await askGPT(prompt);
-  console.log(`RESTAURANT: ${restaurantName}`);
+  logger.info(`RESTAURANT: ${restaurantName}`);
   const cuisine = formatCuisineResult(openAiResponse);
   // add a new line
-  console.log();
+  logger.info('');
 
   return cuisine;
 };
@@ -35,7 +36,7 @@ const main = async () => {
     },
   });
 
-  console.log(
+  logger.info(
     `Found ${restaurantsNoCuisine.length} restaurants without cuisine`
   );
 

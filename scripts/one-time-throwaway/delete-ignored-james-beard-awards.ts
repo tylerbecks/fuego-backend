@@ -1,4 +1,5 @@
 import prisma from '../../src/prisma-client';
+import logger from '../../src/logger';
 
 const IGNORE_AWARDS = new Set([
   'Humanitarian of the Year',
@@ -23,12 +24,12 @@ const main = async () => {
     },
   });
 
-  console.log(`Found ${awards.length} awards to delete`);
+  logger.info(`Found ${awards.length} awards to delete`);
 
   for (let i = 0; i < awards.length; i++) {
     const award = awards[i];
-    console.log(`Deleting award ${i + 1} of ${awards.length}`);
-    console.log({
+    logger.info(`Deleting award ${i + 1} of ${awards.length}`);
+    logger.info({
       id: award.id,
       restaurantId: award.restaurantId,
       type: award.type,
@@ -67,7 +68,7 @@ const main = async () => {
       },
     });
 
-    console.log(`Found ${cachedRecords.length} cached records`);
+    logger.info(`Found ${cachedRecords.length} cached records`);
 
     // Fourth, clear placeIdCache based on name
     await prisma.placeIdCache.deleteMany({

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Configuration, OpenAIApi } from 'openai';
+import logger from '../../src/logger';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY as string,
@@ -15,7 +16,7 @@ const askGPT = async (prompt: string): Promise<string> => {
   }
 
   try {
-    console.log(`💬 Open AI prompt: ${prompt}`);
+    logger.info(`💬 Open AI prompt: ${prompt}`);
     const completion = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
@@ -23,7 +24,7 @@ const askGPT = async (prompt: string): Promise<string> => {
     });
 
     const firstChoice = completion.data.choices[0].message?.content as string;
-    console.log(`🗣️ Response: ${firstChoice}`);
+    logger.info(`🗣️ Response: ${firstChoice}`);
     return firstChoice;
   } catch (error) {
     if (axios.isAxiosError(error)) {

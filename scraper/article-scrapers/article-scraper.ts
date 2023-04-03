@@ -1,3 +1,4 @@
+import logger from '../../src/logger';
 import Browser from '../browser';
 import CondeNast from './conde-nast';
 import CultureTrip from './culture-trip';
@@ -52,9 +53,9 @@ export default class ArticleScraper {
 
   async getRestaurants() {
     await this.scraper.launch();
-    console.log(`Scraping ${this.url}`);
+    logger.info(`Scraping ${this.url}`);
     const restaurants = await this.scraper.getRestaurants();
-    console.log(`Found ${restaurants.length} restaurants`);
+    logger.info(`Found ${restaurants.length} restaurants`);
     await this.scraper.close();
     return restaurants;
   }

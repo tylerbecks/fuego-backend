@@ -1,5 +1,6 @@
 import { Browser, chromium } from 'playwright';
 
+import logger from '../src/logger';
 import prisma from '../src/prisma-client';
 
 class Scraper {
@@ -17,7 +18,7 @@ class Scraper {
     if (!this.browser) {
       return;
     }
-    console.log(`scrapeOgContent for ${url}`);
+    logger.info(`scrapeOgContent for ${url}`);
 
     const page = await this.browser.newPage();
     await page.goto(url);
@@ -45,12 +46,12 @@ class Scraper {
       description: null,
     },
   });
-  console.log(`There are ${urls.length} articles remaining`);
+  logger.info(`There are ${urls.length} articles remaining`);
   const scraper = new Scraper();
   await scraper.launch();
 
   for (const url of urls) {
-    console.log(url);
+    logger.info(url);
     const ogContent = await scraper.scrapeOgContent(url.url);
     await prisma.article.update({
       where: {

@@ -1,5 +1,6 @@
 import Google from '../../src/google-client';
 import prisma from '../../src/prisma-client';
+import logger from '../../src/logger';
 
 // I previosuly ran refresh-articles and forgot to put the city name in the google search String
 // So it may have created the wrong placeIds. This script fixes that.
@@ -25,7 +26,7 @@ import prisma from '../../src/prisma-client';
       `${cachedPlaceId.name} ${city?.city || ''}`
     );
     if (!place.place_id) {
-      console.log(
+      logger.warn(
         `did not find placeId for ${cachedPlaceId.name} ${city?.city || ''}`
       );
       continue;
@@ -52,7 +53,7 @@ import prisma from '../../src/prisma-client';
     });
 
     if (cachedPlaceId.placeId === null) {
-      console.log(`placeId was previously nulll for ${cachedPlaceId.name}`);
+      logger.info(`placeId was previously nulll for ${cachedPlaceId.name}`);
       continue;
     }
 
@@ -68,7 +69,7 @@ import prisma from '../../src/prisma-client';
         });
 
       if (!wronlyCreatedRestaurantForCachedPlaceId) {
-        console.log(
+        logger.warn(
           `Something went wrong trying to find wronlyCreatedRestaurantForCachedPlaceId for ${cachedPlaceId.name}`
         );
         continue;

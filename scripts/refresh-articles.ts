@@ -5,6 +5,8 @@ import { GoToPageError } from '../scraper/utils/errors';
 import prisma from '../src/prisma-client';
 import { findOrCreateRestaurant } from './utils/db';
 
+import logger from '../src/logger';
+
 type Articles = Prisma.PromiseReturnType<typeof fetchAllArticles>;
 type Article = Articles[number];
 
@@ -22,14 +24,14 @@ class ArticleRefresher {
 
   async refreshAll() {
     const articles = await this.#fetchStaleArticles();
-    console.log(`Found ${articles.length} stale articles to refresh.`);
+    logger.info(`Found ${articles.length} stale articles to refresh.`);
 
     for (const article of articles) {
       if (article.url.includes('statesman')) {
         continue;
       }
 
-      console.log(`
+      logger.info(`
       ========================================================
       `);
       try {
@@ -63,7 +65,7 @@ class ArticleRefresher {
     const scraper = new ArticleScraper(article.url);
     const scrapedRestaurants = await scraper.getRestaurants();
     for (const scrapedRestaurant of scrapedRestaurants) {
-      console.log();
+      logger.info('');
       if (!scrapedRestaurant.name) {
         continue;
       }
@@ -105,7 +107,7 @@ class ArticleRefresher {
     });
 
     if (!existing) {
-      console.log('Inserting into articlesToRestaurants');
+      logger.info('Inserting into articlesToRestaurants');
       return await prisma.articlesToRestaurants.create({
         data: {
           restaurantId: restaurant.id,
@@ -117,7 +119,7 @@ class ArticleRefresher {
     }
 
     if (existing.description && !description) {
-      console.log('No description, just updating updatedAt...');
+      logger.info('No description, just updating updatedAt...');
       return await prisma.articlesToRestaurants.update({
         where: {
           id: existing.id,
@@ -129,7 +131,7 @@ class ArticleRefresher {
       });
     }
 
-    console.log('Updating description and updatedAt...');
+    logger.info('Updating description and updatedAt...');
     return await prisma.articlesToRestaurants.update({
       where: {
         id: existing.id,
@@ -143,7 +145,7 @@ class ArticleRefresher {
   }
 
   async #removeOutdatedArticleAssociationsWithRestaurants(article: Article) {
-    console.log(`Pruning outdated article associations`);
+    logger.info(`Pruning outdated article associations`);
     return await prisma.articlesToRestaurants.updateMany({
       where: {
         articleId: article.id,

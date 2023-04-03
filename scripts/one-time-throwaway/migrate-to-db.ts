@@ -1,5 +1,6 @@
 /* eslint-disable */
 import prisma from '../../src/prisma-client.js';
+import logger from '../../src/logger.js';
 
 type JamesBeard = {
   award: string;
@@ -66,13 +67,13 @@ const createCity = async ({
   state: string | null;
   country: string;
 }) => {
-  console.log(`createCity: ${cityName}`);
+  logger.info(`createCity: ${cityName}`);
   // Check if city exists
   const maybeCity = await prisma.city.findFirst({
     where: { city: cityName },
   });
   if (maybeCity) {
-    console.log(`${cityName} already existed, returning id: ${maybeCity.id}`);
+    logger.info(`${cityName} already existed, returning id: ${maybeCity.id}`);
     return maybeCity.id;
   } else {
     const city = await prisma.city.create({
@@ -83,14 +84,14 @@ const createCity = async ({
       },
     });
 
-    console.log(`Created ${cityName}, returning id: ${city.id}`);
+    logger.info(`Created ${cityName}, returning id: ${city.id}`);
 
     return city.id;
   }
 };
 
 const createRestaurant = async (restaurant: RestaurantRaw, cityId: number) => {
-  console.log(`createRestaurant: ${restaurant.name}`);
+  logger.info(`createRestaurant: ${restaurant.name}`);
 
   const { id: restaurantId } = await prisma.restaurant.create({
     data: {
@@ -216,8 +217,8 @@ const CITIES = [
 const main = () => {
   for (const cityMetadata of CITIES) {
     let { city } = cityMetadata;
-    console.log('====================================================');
-    console.log(`Starting city: ${city}`);
+    logger.info('====================================================');
+    logger.info(`Starting city: ${city}`);
     city = city.replace(' ', '_');
 
     // const cityId = await createCity(cityMetadata);
