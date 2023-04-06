@@ -1,6 +1,6 @@
 import Google from '../../src/google-client';
-import prisma from '../../src/prisma-client';
 import logger from '../../src/logger';
+import prisma from '../../src/prisma-client';
 
 // Since I am basically using the city table as a wrapper for pages in the frontend, it doesn't
 // accomodate when I'm scraping restaurants without existing cities. So it's better to
@@ -77,31 +77,30 @@ export const findOrCreateRestaurant = async (
   const google = new Google();
   const cityName = city ? city : await getCityName(cityId as number);
 
-  const placeId = await google.findPlaceFromText(
+  const place = await google.findPlaceFromText(
     `restaurant ${restaurantName} ${cityName ?? ''}`
   );
 
-  if (!placeId.place_id) {
+  const placeId = place?.place_id ? place.place_id : null;
+
+  if (!placeId) {
     logger.warn(`No placeId found for ${restaurantName}`);
   }
 
-  await cachePlaceIdForRestaurant(
-    restaurantName,
-    cityId,
-    placeId.place_id,
-    city
-  );
+  await cachePlaceIdForRestaurant(restaurantName, cityId, placeId, city);
 
-  if (placeId.place_id !== undefined) {
+  if (placeId !== undefined) {
     const restaurantWithSamePlaceId = await prisma.restaurant.findFirst({
       where: {
-        gPlaceId: placeId.place_id ?? null,
+        gPlaceId: placeId,
       },
     });
 
     if (restaurantWithSamePlaceId) {
       logger.info(
-        `After caching id, found restaurant with same placeId ${placeId.place_id}`
+        `After caching id, found restaurant with same placeId ${
+          placeId ?? 'null'
+        }`
       );
       return restaurantWithSamePlaceId;
     }
@@ -111,7 +110,7 @@ export const findOrCreateRestaurant = async (
   return await prisma.restaurant.create({
     data: {
       name: restaurantName,
-      gPlaceId: placeId.place_id ?? null,
+      gPlaceId: placeId,
       cityId: cityId ?? null,
       city: city ?? null,
     },
@@ -131,14 +130,14 @@ const getCityName = async (cityId: number) => {
 const cachePlaceIdForRestaurant = async (
   restaurantName: string,
   cityId: number | undefined,
-  placeId: string | undefined,
+  placeId: string | null,
   city: string | undefined
 ) =>
   await prisma.placeIdCache.create({
     data: {
       name: restaurantName,
       cityId: cityId ?? null,
-      placeId: placeId ?? null,
+      placeId: placeId,
       city: city ?? null,
     },
   });
