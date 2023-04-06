@@ -274,5 +274,88 @@
   "Milwaukee": false,
   "Minneapolis": false,
   "Savannah": false,
-  "Tucson": false
+  "Tucson": false,
+  "Copenhagen": false,
+  "Lima": false,
+  "Madrid": false,
+  "Atxondo": false,
+  "São Paulo": false,
+  "Rubano": false,
+  "Senigallia": false,
+  "Gardone Riviera": false,
+  "Vienna": false,
+  "Buenos Aires": false,
+  "Castel di Sangro": false,
+  "Getaria": false,
+  "Berlin": false,
+  "Alba": false,
+  "San Sebastian": false,
+  "Barcelona": {
+    "id": 1,
+    "city": "barcelona"
+  },
+  "Mexico City": {
+    "id": 10,
+    "city": "mexico city"
+  },
+  "Tokyo": {
+    "id": 22,
+    "city": "tokyo"
+  },
+  "Paris": {
+    "id": 17,
+    "city": "paris"
+  },
+  "Antwerp": false,
+  "Hong Kong": false,
+  "Stockholm": false,
+  "Kruishoutem": false,
+  "San Cassiano": false,
+  "Kobarid": false,
+  "London": {
+    "id": 8,
+    "city": "london"
+  },
+  "Singapore": false,
+  "Cape Town": false,
+  "Bangkok": false,
+  "Fürstenau": false,
+  "Osaka": false,
+  "Dénia": false,
+  "Santiago": false,
+  "Lisbon": false,
+  "Rio de Janeiro": false,
+  "Bogotá": false,
+  "Healdsburg": false,
+  "Guadalajara": false,
+  "Larrabetzu": false,
+  "Dubai": false,
+  "La Madelaine-sous-Montreuil": false,
+  "Shanghai": false,
+  "Seoul": false,
+  "San Francisco": {
+    "id": 20,
+    "city": "san francisco"
+  },
+  "Pocantico Hills": false,
+  "Marseille": false,
+  "Melbourne": false,
+  "Istanbul": false,
+  "Paternoster": false,
+  "Chicago": {
+    "id": 4,
+    "city": "chicago"
+  },
+  "New Delhi": false,
+  "Munich": {
+    "id": 12,
+    "city": "munich"
+  },
+  "Megève": false,
+  "Roses": false,
+  "Yountville": false,
+  "Bray": false,
+  "Girona": false,
+  "Modena": false,
+  "Menton": false
 }

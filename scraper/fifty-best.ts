@@ -27,7 +27,7 @@ export default class FiftyBestScraper extends Browser {
 
     const page = await this.browser.newPage();
     logger.info('page.goto(url)...');
-    await page.goto(url);
+    await page.goto(url, { timeout: 0 });
     const cards = await this.getFiftyBestCards(page);
     logger.info(`Found ${cards.length} cards.`);
 
@@ -43,7 +43,7 @@ export default class FiftyBestScraper extends Browser {
 
     const page = await this.browser.newPage();
     logger.info('page.goto(url)...');
-    await page.goto(url);
+    await page.goto(url, { timeout: 0 });
     const cards = await this.getCards(page);
     logger.info(`Found ${cards.length} cards.`);
 

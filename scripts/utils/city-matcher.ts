@@ -40,7 +40,7 @@ export default class CityNameMatcher {
     // Check if city previously cached as cityFromDB, meaning a match was found in the code below
     if (this.openAIResponseCache[cityState]) {
       logger.info(`${cityState} cached with value:`);
-      logger.info(this.openAIResponseCache[cityState]);
+      console.log(this.openAIResponseCache[cityState]);
       return this.openAIResponseCache[cityState] as City;
     }
 
@@ -69,6 +69,7 @@ export default class CityNameMatcher {
       if (city) {
         logger.info(`Found existing city. Caching and returning ${city.city}`);
         this.openAIResponseCache[cityState] = city;
+        this.saveCache();
         return city;
       }
     }
@@ -93,7 +94,7 @@ export default class CityNameMatcher {
         `Found exact city match in DB. Caching and returning ${existingCity.city}`
       );
       this.openAIResponseCache[cityState] = existingCity;
-      logger.info(this.openAIResponseCache);
+      this.saveCache();
       return existingCity;
     }
 
@@ -101,18 +102,18 @@ export default class CityNameMatcher {
     for (const city of this.citiesFromDB) {
       // if you don't change new york to new york city, open ai will think you're asking if it's in new york state
       const cityNameFromDB = getCorrectCityName(city.city);
-      const prompt = `Is ${cityState} in ${cityNameFromDB}? Just return yes or no.`;
+      const prompt = `Is the city ${cityState} in ${cityNameFromDB}? Just return yes or no.`;
       const response = await askGPT(prompt);
       if (response.match(/yes/i)) {
         logger.info(`✅ Found city match! Caching and returning ${city.city}`);
         this.openAIResponseCache[cityState] = city;
-        logger.info(this.openAIResponseCache);
+        this.saveCache();
         return city;
       }
     }
 
     this.openAIResponseCache[cityState] = false;
-    logger.info(this.openAIResponseCache);
+    this.saveCache();
 
     return null;
   }

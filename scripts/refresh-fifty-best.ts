@@ -17,8 +17,10 @@ class RefreshFiftyBest {
     await cityMatcher.loadAllCities();
 
     for (let i = 0; i < restaurants.length; i++) {
-      logger.info(`Award ${i + 1} of ${restaurants.length}`);
       const restaurant = restaurants[i];
+      logger.info(
+        `Award ${i + 1} of ${restaurants.length}: ${restaurant.name ?? ''}`
+      );
 
       if (restaurant.name === null || restaurant.city === null) {
         throw new Error('Restaurant name is null');
