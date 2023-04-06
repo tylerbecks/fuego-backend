@@ -1,6 +1,6 @@
 import JamesBeardScraper from '../../scraper/award-scrapers/james-beard';
-import prisma from '../../src/prisma-client';
 import logger from '../../src/logger';
+import prisma from '../../src/prisma-client';
 
 // When I first scraped james beard, I saved the city in the placeIdCache instead of the cityState
 // That's a problem for cities that have the same name in different states

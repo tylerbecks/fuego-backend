@@ -1,5 +1,5 @@
-import prisma from '../../src/prisma-client';
 import logger from '../../src/logger';
+import prisma from '../../src/prisma-client';
 
 const IGNORE_AWARDS = new Set([
   'Humanitarian of the Year',
