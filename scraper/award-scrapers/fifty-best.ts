@@ -1,7 +1,7 @@
 import { Locator, Page } from 'playwright';
 
-import logger from '../src/logger';
-import Browser from './browser';
+import logger from '../../src/logger';
+import Browser from '../browser';
 
 const FIFTY_BEST_URL = 'https://www.theworlds50best.com/list/1-50';
 const HUNDRED_BEST_URL = 'https://www.theworlds50best.com/list/51-100';

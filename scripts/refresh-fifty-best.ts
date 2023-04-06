@@ -1,4 +1,4 @@
-import FiftyBestScraper from '../scraper/fifty-best';
+import FiftyBestScraper from '../scraper/award-scrapers/fifty-best';
 import logger from '../src/logger';
 import prisma from '../src/prisma-client';
 import CityNameMatcher from './utils/city-matcher';
