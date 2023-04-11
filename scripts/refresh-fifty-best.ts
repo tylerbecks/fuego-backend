@@ -88,8 +88,6 @@ class RefreshFiftyBest {
         deletedAt: this.now,
       },
     });
-
-    cityMatcher.saveCache();
   }
 }
 
