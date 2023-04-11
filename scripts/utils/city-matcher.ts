@@ -77,7 +77,7 @@ export default class CityNameMatcher {
       if (city) {
         logger.info(`Found existing city. Caching and returning ${city.city}`);
 
-        // this.openAIResponseCache[cityState] = city;
+        this.saveToCache(cityState, city.id, city.city);
         return city;
       }
     }
