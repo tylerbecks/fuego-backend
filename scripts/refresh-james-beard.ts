@@ -9,7 +9,6 @@ const SOURCE_ID = 'james_beard';
 class JamesBeardRefresher {
   async run() {
     const cityMatcher = new CityNameMatcher();
-    await cityMatcher.loadAllCities();
 
     const scraper = new JamesBeardScraper();
     const jamesBeardAwards = await scraper.getWinners();
@@ -23,7 +22,11 @@ class JamesBeardRefresher {
         `James Beard: ${award.restaurant}, ${award.award}, ${award.year}, ${cityState}`
       );
 
-      const existingCity = await cityMatcher.matchCityFromDb(cityState);
+      const country = 'us';
+      const existingCity = await cityMatcher.matchCityFromDb(
+        cityState,
+        country
+      );
 
       if (existingCity) {
         logger.info(`Found city ${existingCity.city}`);

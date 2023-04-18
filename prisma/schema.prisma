@@ -35,6 +35,7 @@ model Award {
   year         Int
   url          String     @db.VarChar
   chef         String?    @db.VarChar
+  metadata     Json?      @db.JsonB
   restaurants  Restaurant @relation(fields: [restaurantId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("awards")
@@ -62,6 +63,11 @@ model Restaurant {
   cityId    Int?                    @map("city_id")
   cuisine   String?                 @db.VarChar
   city      String?                 @db.VarChar
+  lat       Float?                  @db.DoublePrecision
+  long      Float?                  @db.DoublePrecision
+  country   String?                 @db.VarChar
+  chef      String?                 @db.VarChar
+  price     Int?                    @db.Integer
   articles  ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
   awards    Award[]
   cities    City?                   @relation("citiesTorestaurants", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")
