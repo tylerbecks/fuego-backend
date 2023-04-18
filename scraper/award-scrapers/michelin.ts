@@ -36,7 +36,7 @@ export default class MichelinScraper extends Browser {
     const page = await this.browser.newPage();
 
     let morePagesExist = true;
-    let currentPage = 540; // out of 811
+    let currentPage = 1; // out of 810
 
     while (morePagesExist) {
       logger.info(
@@ -265,6 +265,6 @@ export default class MichelinScraper extends Browser {
     }
 
     const lastButtonClass = await buttons.at(-1)?.getAttribute('class');
-    return !!lastButtonClass && !lastButtonClass.includes('arrow');
+    return !lastButtonClass?.includes('arrow');
   }
 }
