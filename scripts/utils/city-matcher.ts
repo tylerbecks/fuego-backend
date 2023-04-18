@@ -123,7 +123,9 @@ export default class CityNameMatcher {
 
     if (country?.length !== 2) {
       // https://www.nationsonline.org/oneworld/country_code_list.htm
-      throw new Error('Exepcetd country to be an alpha 2 code');
+      logger.warn(
+        `Expected country to be an alpha 2 code, received ${country ?? 'NULL'}`
+      );
     }
 
     if (country && !this.existingCountries.has(country)) {

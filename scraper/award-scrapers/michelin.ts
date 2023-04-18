@@ -36,7 +36,7 @@ export default class MichelinScraper extends Browser {
     const page = await this.browser.newPage();
 
     let morePagesExist = true;
-    let currentPage = 485; // out of 811
+    let currentPage = 540; // out of 811
 
     while (morePagesExist) {
       logger.info(

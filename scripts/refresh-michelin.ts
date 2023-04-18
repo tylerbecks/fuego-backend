@@ -17,7 +17,9 @@ class MichelinRefresher {
       for (let i = 0; i < restaurants.length; i++) {
         const michelinRestaurant = restaurants[i];
         logger.info(
-          `Award ${i + 1} of ${restaurants.length}: ${michelinRestaurant.name}`
+          `Award ${i + 1} of ${restaurants.length}: ${
+            michelinRestaurant.name
+          } in ${michelinRestaurant.city}, ${michelinRestaurant.country}`
         );
 
         const existingCity = await cityMatcher.matchCityFromDb(
