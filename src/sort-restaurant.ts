@@ -32,6 +32,7 @@ const getFuegoScore = (restaurant: Restaurant) => {
 
   if (maybeMichelin) {
     const MICHELIN_SCORE_MAP = {
+      GUIDE: 1,
       BIB_GOURMAND: 1.1,
       ONE_STAR: 1.3,
       TWO_STARS: 1.4,
