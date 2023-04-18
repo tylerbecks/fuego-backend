@@ -5,10 +5,26 @@ import Browser from '../browser';
 
 const BASE_URL = 'https://guide.michelin.com/us/en/restaurants/page/';
 
+type MichelinRestaurant = {
+  awards: string[];
+  name: string;
+  url: string;
+  lat: number;
+  lng: number;
+  cuisine: string;
+  city: string;
+  country: string;
+  region: string;
+  price: number;
+  chef: string | null;
+};
+
 // Michelin has over 16k restaurants, so we can't store them all in memory.
 // Need to add a hook to update the database as we go.
 export default class MichelinScraper extends Browser {
-  async scrape() {
+  async scrape(
+    onScrapePage: (restaurants: MichelinRestaurant[]) => Promise<void>
+  ) {
     logger.info('Launching browser...');
     await this.launch();
 
@@ -20,13 +36,29 @@ export default class MichelinScraper extends Browser {
     const page = await this.browser.newPage();
 
     let morePagesExist = true;
-    let currentPage = 1;
+    let currentPage = 1; // out of 810
 
     while (morePagesExist) {
+      logger.info(
+        '===================================================================='
+      );
+      logger.info(`Scraping page ${BASE_URL}${currentPage}`);
+      logger.info(
+        '===================================================================='
+      );
       await page.goto(`${BASE_URL}${currentPage}`);
-      const restaurants = await this.getRestaurants(page);
+      let restaurants;
+      try {
+        restaurants = await this.getRestaurants(page);
+      } catch (error) {
+        if (error instanceof Error) {
+          logger.error(error.message);
+        }
+        continue;
+      }
+
       logger.info(`Found ${restaurants.length} restaurants on this page.`);
-      console.log(restaurants);
+      await onScrapePage(restaurants);
 
       currentPage++;
       morePagesExist = !(await this.isLastPage(page));
@@ -35,50 +67,83 @@ export default class MichelinScraper extends Browser {
     void this.browser?.close();
   }
 
-  private async getRestaurants(page: Page) {
+  private async getRestaurants(page: Page): Promise<MichelinRestaurant[]> {
     const cards = await this.getCards(page);
 
     return await Promise.all(
-      cards.map(async (c) => {
-        // use Promise.all to run all async getters at once
-        const [
-          award,
-          name,
-          url,
-          lat,
-          lng,
-          cuisine,
-          country,
-          region,
-          price,
-          chef,
-        ] = await Promise.all([
-          this.getAward(c),
-          this.getRestaurantName(c),
-          this.getRestaurantUrl(c),
-          this.getLat(c),
-          this.getLng(c),
-          this.getCuisine(c),
-          this.getCountry(c),
-          this.getRegion(c),
-          this.getPrice(c),
-          this.getChef(c),
-        ]);
-
-        return {
-          award,
-          name,
-          url,
-          lat,
-          lng,
-          cuisine,
-          country,
-          region,
-          price,
-          chef,
-        };
-      })
+      cards.map(async (c) => await this.getRestaurantData(c))
     );
+  }
+
+  private async getRestaurantData(card: Locator): Promise<MichelinRestaurant> {
+    // use Promise.all to run all async getters at once
+    const [
+      awards,
+      name,
+      url,
+      lat,
+      lng,
+      cuisine,
+      city,
+      country,
+      region,
+      price,
+      chef,
+    ] = await Promise.all([
+      this.getAwards(card),
+      this.getRestaurantName(card),
+      this.getRestaurantUrl(card),
+      this.getLat(card),
+      this.getLng(card),
+      this.getCuisine(card),
+      this.getCity(card),
+      this.getCountry(card),
+      this.getRegion(card),
+      this.getPrice(card),
+      this.getChef(card),
+    ]);
+
+    if (!name) {
+      throw new Error('Restaurant name is required');
+    }
+    if (!url) {
+      throw new Error(`No url found for ${name}`);
+    }
+    if (!lat) {
+      throw new Error(`No lat found for ${name}`);
+    }
+    if (!lng) {
+      throw new Error(`No lng found for ${name}`);
+    }
+    if (!cuisine) {
+      throw new Error(`No cuisine found for ${name}`);
+    }
+    if (!city) {
+      throw new Error(`No city found for ${name}`);
+    }
+    if (!country) {
+      throw new Error(`No country found for ${name}`);
+    }
+    if (!region) {
+      throw new Error(`No region found for ${name}`);
+    }
+    if (!price) {
+      throw new Error(`No price found for ${name}`);
+    }
+
+    return {
+      awards,
+      name,
+      url,
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
+      cuisine,
+      city,
+      country,
+      region,
+      price,
+      chef,
+    };
   }
 
   private async getCards(page: Page) {
@@ -93,7 +158,7 @@ export default class MichelinScraper extends Browser {
     return `https://guide.michelin.com${relativeSrc}`;
   }
 
-  private async getAward(card: Locator) {
+  private async getAwards(card: Locator) {
     const awardIcons = await card
       .locator('div.card__menu-content--rating')
       .locator('img.michelin-award')
@@ -103,19 +168,22 @@ export default class MichelinScraper extends Browser {
       awardIcons.map(async (i) => await i.getAttribute('src'))
     );
 
-    // There is no icon for the michelin guide, so assume no icon means guide
-    if (imageUrls.length === 0) {
-      return 'GUIDE';
-    }
+    const greenStar = imageUrls.find((i) => i?.includes('gastronomie-durable'));
+    const bibGourmand = imageUrls.find((i) => i?.includes('bib-gourmand'));
+    const guide = imageUrls.length === 0;
+    const numStars = this.getMichelinStars(imageUrls);
 
-    if (imageUrls[0] === null) {
-      throw new Error('No image url found');
-    }
+    const awards = [
+      greenStar && 'GREEN_STAR',
+      bibGourmand && 'BIB_GOURMAND',
+      guide && 'GUIDE',
+      numStars,
+    ];
 
-    if (imageUrls.some((i) => i?.includes('bib-gourmand'))) {
-      return 'BIB_GOURMAND';
-    }
+    return awards.filter((a) => a) as string[];
+  }
 
+  getMichelinStars = (imageUrls: Array<string | null>) => {
     const numStars = imageUrls.filter((i) => i?.includes('1star'));
 
     switch (numStars.length) {
@@ -126,13 +194,9 @@ export default class MichelinScraper extends Browser {
       case 3:
         return 'THREE_STARS';
       default:
-        throw new Error(
-          `Unknown michelin award for ${
-            (await this.getRestaurantName(card)) ?? 'unknown'
-          }`
-        );
+        return undefined;
     }
-  }
+  };
 
   private async getLat(card: Locator) {
     return await card.getAttribute('data-lat');
@@ -152,6 +216,12 @@ export default class MichelinScraper extends Browser {
     return await card
       .locator('div.card__menu-like')
       .getAttribute('data-cooking-type');
+  }
+
+  private async getCity(card: Locator) {
+    return await card
+      .locator('div.card__menu-like')
+      .getAttribute('data-dtm-city');
   }
 
   private async getCountry(card: Locator) {
@@ -195,11 +265,6 @@ export default class MichelinScraper extends Browser {
     }
 
     const lastButtonClass = await buttons.at(-1)?.getAttribute('class');
-    return !!lastButtonClass && !lastButtonClass.includes('arrow');
+    return !lastButtonClass?.includes('arrow');
   }
 }
-
-(async function () {
-  const scraper = new MichelinScraper();
-  await scraper.scrape();
-})();

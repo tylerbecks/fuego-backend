@@ -14,7 +14,6 @@ class RefreshFiftyBest {
     const restaurants = await scraper.scrape();
 
     const cityMatcher = new CityNameMatcher();
-    await cityMatcher.loadAllCities();
 
     for (let i = 0; i < restaurants.length; i++) {
       const restaurant = restaurants[i];
@@ -26,7 +25,11 @@ class RefreshFiftyBest {
         throw new Error('Restaurant name is null');
       }
 
-      const existingCity = await cityMatcher.matchCityFromDb(restaurant.city);
+      const country = null;
+      const existingCity = await cityMatcher.matchCityFromDb(
+        restaurant.city,
+        country
+      );
 
       if (existingCity) {
         logger.info(`Found city ${existingCity.city}`);

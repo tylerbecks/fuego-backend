@@ -32,7 +32,7 @@ export default class Google {
     try {
       const response = await this.client.findPlaceFromText({
         params: {
-          input: searchString,
+          input: searchString.replace('.', ''), // for some reason, periods were breaking the google client
           inputtype: PlaceInputType.textQuery,
           key: process.env.GOOGLE_API_KEY,
         },
