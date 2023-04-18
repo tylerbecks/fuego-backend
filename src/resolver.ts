@@ -23,6 +23,15 @@ type Article = {
   url: string;
 };
 
+type Award = {
+  id: number;
+  source: string;
+  type: string;
+  year: number;
+  url: string;
+  chef: string | null;
+};
+
 export const getRestaurantById = async (restaurantId: number) => {
   const restaurantRaw = await prisma.restaurant.findUnique({
     where: { id: Number(restaurantId) },
@@ -92,12 +101,17 @@ export const getRestaurantsByCityId = async (
     return {
       ...restaurant,
       articles: filterArticles(articles, articleIds),
+      awards: filterAwards(restaurant.awards),
     };
   });
 
   return restaurants.filter(
     ({ articles, awards }) => articles.length || awards.length
   );
+};
+
+const filterAwards = (awards: Award[]) => {
+  return awards.filter((award) => award.type !== 'GREEN_STAR');
 };
 
 const filterArticles = (articles: Article[], articleIds: number[]) => {
