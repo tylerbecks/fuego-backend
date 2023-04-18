@@ -102,13 +102,12 @@ class MichelinRefresher {
     });
   }
 
-  // TODO figure out how long it takes the run script to finish
   // this assumes the run method completed all 16k restaurants
   async softDeleteOldAwards() {
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
-    await prisma.award.updateMany({
+    const results = await prisma.award.updateMany({
       where: {
         source: SOURCE_ID,
         OR: [
@@ -127,6 +126,8 @@ class MichelinRefresher {
         deletedAt: this.now,
       },
     });
+
+    console.log(`Updated ${results.count} awards`);
   }
 }
 
