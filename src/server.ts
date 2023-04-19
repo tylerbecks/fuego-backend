@@ -61,7 +61,6 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
 
     res.json({
       restaurants: paginateRestaurants,
-      totalRestaurants: sortedRestaurants.length,
     });
   } catch (error) {
     next(error);
