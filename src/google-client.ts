@@ -4,16 +4,14 @@ import {
 } from '@googlemaps/google-maps-services-js';
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { Readable } from 'stream';
 
 import logger from './logger';
 
 dotenv.config();
 
-// https://googlemaps.github.io/google-maps-services-js/index.html#new-googlemapsgoogle-maps-services-js
-//  - findPlaceFromText ✅ (can just return the place_id)
-//  - placeAutocomplete 🚫 the params to this query seem too geared towards searching near a user from an input on the frontend
-//  - placeQueryAutocomplete 🚫 (returns too many results)
-//  - textSearch 🚫 (this returns all the fields and bills accordingly)
+// API:     https://googlemaps.github.io/google-maps-services-js/classes/Client.html
+// Pricing: https://developers.google.com/maps/documentation/places/web-service/usage-and-billing#places-photo
 
 export default class Google {
   client;
@@ -49,25 +47,61 @@ export default class Google {
     }
   }
 
-  async refreshPlaceId(placeId: string): Promise<{ place_id: string | null }> {
+  async refreshPlaceId(placeId: string) {
+    return await this.getPlaceDetails(placeId, ['place_id']);
+  }
+
+  // https://developers.google.com/maps/documentation/javascript/place-data-fields
+  async getPlaceDetails(placeId: string, fields: string[]) {
     if (!process.env.GOOGLE_API_KEY) {
       throw new Error('GOOGLE_API_KEY env variable not set');
     }
 
-    logger.info(`Refreshing placeId: ${placeId}`);
+    logger.info(`Getting place details for: ${placeId}`);
 
     try {
       const response = await this.client.placeDetails({
         params: {
           place_id: placeId,
           key: process.env.GOOGLE_API_KEY,
-          fields: ['place_id'],
+          ...(fields ? { fields } : {}),
         },
       });
 
-      return response.data.result as { place_id: string | null };
+      return response.data.result;
     } catch (error) {
-      logger.error('There was a google error!');
+      logger.error(
+        `There was a google error during getPlaceDetails! placeId: ${placeId}`
+      );
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.status, error.response?.data);
+      }
+      throw error;
+    }
+  }
+
+  async getPhoto(photoReference: string): Promise<Readable> {
+    if (!process.env.GOOGLE_API_KEY) {
+      throw new Error('GOOGLE_API_KEY env variable not set');
+    }
+
+    logger.info(`Getting photo for: ${photoReference}`);
+
+    try {
+      const response = await this.client.placePhoto({
+        params: {
+          maxwidth: 400,
+          photoreference: photoReference,
+          key: process.env.GOOGLE_API_KEY,
+        },
+        responseType: 'stream',
+      });
+
+      return response.data as Readable;
+    } catch (error) {
+      logger.error(
+        `There was a google error during getPhoto! photoReference: ${photoReference}`
+      );
       if (axios.isAxiosError(error)) {
         console.error(error.response?.status, error.response?.data);
       }
@@ -78,8 +112,13 @@ export default class Google {
 
 // (async function () {
 //   const google = new Google();
-//   const response = await google.findPlaceFromText(
-//     'Rustic Canyon restaurant Santa Monica'
-//   );
+//   const response = await google.getPlaceDetails('ChIJSRvZ1yHGwoARcLrfvc-APl4', [
+//     'business_status',
+//     'geometry/location',
+//     'name',
+//     'formatted_address',
+//     'photos',
+//     'url',
+//   ]);
 //   console.log(response);
 // })();

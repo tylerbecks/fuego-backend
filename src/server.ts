@@ -6,13 +6,22 @@ import express from 'express';
 import morgan from 'morgan';
 import { ParsedQs } from 'qs';
 
+import Google from './google-client';
 import prisma from './prisma-client';
 import { getRestaurantById, getRestaurantsByCityId } from './resolver';
 import { sortRestaurantsByScore } from './sort-restaurant';
 
 const port = process.env.PORT || 3001;
-
 const RESTAURANTS_PER_PAGE = 10;
+
+const BASE_DETAILS_FIELDS = [
+  'business_status',
+  'geometry/location',
+  'name',
+  'formatted_address',
+  'photos',
+  'url',
+];
 
 const app = express();
 app.use(cors());
@@ -22,7 +31,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-const sliceList = (list: unknown[], page: number, limit: number) => {
+const sliceList = <T>(list: T[], page: number, limit: number) => {
   const start = (page - 1) * limit;
   const end = page * limit;
   return list.slice(start, end);
@@ -50,7 +59,6 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
     });
 
     const articleIdsArr = formatArticleIdsExclude(articleIds);
-
     const restaurants = await getRestaurantsByCityId(cityId, articleIdsArr);
     const sortedRestaurants = sortRestaurantsByScore(restaurants);
     const paginateRestaurants = sliceList(
@@ -59,11 +67,69 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       RESTAURANTS_PER_PAGE
     );
 
+    // call google api to get place details for first 2 restaurants
+    const google = new Google();
+    const decoratedRestaurants = await Promise.all(
+      paginateRestaurants.map(async (restaurant, index) => {
+        let placeDetails = null;
+
+        if (index < 2 && restaurant.gPlaceId) {
+          const fields = [...BASE_DETAILS_FIELDS];
+
+          // Price is not part of the base data, it's considered atmosphere data, so it's billed additionally
+          // Only include price_level if we don't already have price
+          if (!restaurant.price) {
+            fields.push('price_level');
+          }
+
+          placeDetails = await google.getPlaceDetails(
+            restaurant.gPlaceId,
+            fields
+          );
+        }
+
+        return {
+          placeDetails,
+          ...restaurant,
+        };
+      })
+    );
+
     res.json({
-      restaurants: paginateRestaurants,
+      restaurants: decoratedRestaurants,
     });
   } catch (error) {
     next(error);
+  }
+});
+
+app.get('/photo/:photoReference', async (req, res) => {
+  const { photoReference } = req.params;
+
+  try {
+    const google = new Google();
+    const photoStream = await google.getPhoto(photoReference);
+    res.setHeader('Content-Type', 'image/jpeg');
+    photoStream.pipe(res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error retrieving photo');
+  }
+});
+
+app.get('/place-details/:placeId', async (req, res) => {
+  const { placeId } = req.params;
+
+  try {
+    const google = new Google();
+    const placeDetails = await google.getPlaceDetails(
+      placeId,
+      BASE_DETAILS_FIELDS
+    );
+    res.json(placeDetails);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(`Error retrieving place details for ${placeId}`);
   }
 });
 
