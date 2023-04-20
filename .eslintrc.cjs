@@ -22,16 +22,15 @@ module.exports = {
   plugins: ['@typescript-eslint', 'import', 'simple-import-sort'],
   rules: {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreIIFE: true }],
+    'simple-import-sort/exports': 'error',
+    'simple-import-sort/imports': 'error',
     'import/first': 'error',
     'import/newline-after-import': 'error',
     'import/no-deprecated': 'warn',
     'import/no-mutable-exports': 'error',
     'import/no-unresolved': 'error',
     'import/no-useless-path-segments': 'error',
-    'import/order': 'error',
     'n/no-missing-import': 'off',
-    'simple-import-sort/exports': 'error',
-    'simple-import-sort/imports': 'error',
   },
   settings: {
     'import/parsers': {

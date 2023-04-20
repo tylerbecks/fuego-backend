@@ -37,9 +37,13 @@ export const getRestaurantById = async (restaurantId: number) => {
     where: { id: Number(restaurantId) },
     select: {
       id: true,
-      name: true,
-      gPlaceId: true,
       cuisine: true,
+      chef: true,
+      gPlaceId: true,
+      lat: true,
+      long: true,
+      name: true,
+      price: true,
       awards: {
         where: {
           deletedAt: null,
@@ -73,9 +77,13 @@ export const getRestaurantsByCityId = async (
     where: { cityId: Number(cityId) },
     select: {
       id: true,
-      name: true,
-      gPlaceId: true,
       cuisine: true,
+      chef: true,
+      gPlaceId: true,
+      lat: true,
+      long: true,
+      name: true,
+      price: true,
       awards: {
         where: {
           deletedAt: null,
