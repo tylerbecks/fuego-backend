@@ -119,13 +119,21 @@ app.get('/photo/:photoReference', async (req, res) => {
 
 app.get('/place-details/:placeId', async (req, res) => {
   const { placeId } = req.params;
+  const fields = req.query.fields as string[];
+
+  if (!fields || !Array.isArray(fields) || fields.length === 0) {
+    res
+      .status(400)
+      .send(
+        'Fields required to fetch place details. Please provide a query param like ?fields=formatted_address,geometry/location'
+      );
+    return;
+  }
 
   try {
     const google = new Google();
-    const placeDetails = await google.getPlaceDetails(
-      placeId,
-      BASE_DETAILS_FIELDS
-    );
+
+    const placeDetails = await google.getPlaceDetails(placeId, fields);
     res.json(placeDetails);
   } catch (error) {
     console.error(error);
