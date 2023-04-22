@@ -69,7 +69,7 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
 
     // call google api to get place details for first 2 restaurants
     const google = new Google();
-    const decoratedRestaurants = await Promise.all(
+    let decoratedRestaurants = await Promise.all(
       paginateRestaurants.map(async (restaurant, index) => {
         let placeDetails = null;
 
@@ -89,9 +89,45 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
         }
 
         return {
-          placeDetails,
           ...restaurant,
+          placeDetails,
         };
+      })
+    );
+
+    // Next, fetch google details for every restaurant that doesn't have lat/long
+    // This is needed to show all the restaurants on the map on render
+    // TODO: If on mobile, we don't need to do this until the user hits the map button, but that's an optimization for the future
+    decoratedRestaurants = await Promise.all(
+      decoratedRestaurants.map(async (restaurant) => {
+        if (restaurant.placeDetails) {
+          return restaurant;
+        }
+        if (!restaurant.gPlaceId) {
+          return restaurant;
+        }
+
+        if (!restaurant.lat || !restaurant.long) {
+          const fields = [...BASE_DETAILS_FIELDS];
+
+          // Price is not part of the base data, it's considered atmosphere data, so it's billed additionally
+          // Only include price_level if we don't already have price
+          if (!restaurant.price) {
+            fields.push('price_level');
+          }
+
+          const placeDetails = await google.getPlaceDetails(
+            restaurant.gPlaceId,
+            fields
+          );
+
+          return {
+            ...restaurant,
+            placeDetails,
+          };
+        }
+
+        return restaurant;
       })
     );
 
