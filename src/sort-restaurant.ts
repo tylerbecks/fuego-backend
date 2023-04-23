@@ -1,8 +1,4 @@
-import { Prisma } from '@prisma/client';
-
-import { getRestaurantById } from './resolver';
-
-export type Restaurant = Prisma.PromiseReturnType<typeof getRestaurantById>;
+import { Restaurant } from './types';
 
 export enum AwardSource {
   james_beard = 'james_beard',

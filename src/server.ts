@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 // eslint does not like passing an async function as the second arg to app.get
 // disabling for now because this seems to work
+import { PlaceData } from '@googlemaps/google-maps-services-js';
 import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
@@ -10,18 +11,10 @@ import Google from './google-client';
 import prisma from './prisma-client';
 import { getRestaurantById, getRestaurantsByCityId } from './resolver';
 import { sortRestaurantsByScore } from './sort-restaurant';
+import { Restaurant } from './types';
 
 const port = process.env.PORT || 3001;
 const RESTAURANTS_PER_PAGE = 10;
-
-const BASE_DETAILS_FIELDS = [
-  'business_status',
-  'geometry/location',
-  'name',
-  'formatted_address',
-  'photos',
-  'url',
-];
 
 const app = express();
 app.use(cors());
@@ -39,6 +32,7 @@ const sliceList = <T>(list: T[], page: number, limit: number) => {
 
 app.get('/city/:city/restaurants', async (req, res, next) => {
   let { city } = req.params;
+  // TODO remove articleIds
   const { page, articleIds } = req.query;
 
   if (!page) {
@@ -67,31 +61,17 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
       RESTAURANTS_PER_PAGE
     );
 
-    // call google api to get place details for first 2 restaurants
-    const google = new Google();
     let decoratedRestaurants = await Promise.all(
       paginateRestaurants.map(async (restaurant, index) => {
-        let placeDetails = null;
-
-        if (index < 2 && restaurant.gPlaceId) {
-          const fields = [...BASE_DETAILS_FIELDS];
-
-          // Price is not part of the base data, it's considered atmosphere data, so it's billed additionally
-          // Only include price_level if we don't already have price
-          if (!restaurant.price) {
-            fields.push('price_level');
-          }
-
-          placeDetails = await google.getPlaceDetails(
-            restaurant.gPlaceId,
-            fields
-          );
+        // call google api to get place details for first 2 restaurants
+        if (index >= 2 || !restaurant.gPlaceId) {
+          return {
+            ...restaurant,
+            placeDetails: null,
+          };
         }
 
-        return {
-          ...restaurant,
-          placeDetails,
-        };
+        return await decorateRestaurantWithPlaceDetails(restaurant);
       })
     );
 
@@ -103,31 +83,11 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
         if (restaurant.placeDetails) {
           return restaurant;
         }
-        if (!restaurant.gPlaceId) {
+        if (restaurant.lat && restaurant.long) {
           return restaurant;
         }
 
-        if (!restaurant.lat || !restaurant.long) {
-          const fields = [...BASE_DETAILS_FIELDS];
-
-          // Price is not part of the base data, it's considered atmosphere data, so it's billed additionally
-          // Only include price_level if we don't already have price
-          if (!restaurant.price) {
-            fields.push('price_level');
-          }
-
-          const placeDetails = await google.getPlaceDetails(
-            restaurant.gPlaceId,
-            fields
-          );
-
-          return {
-            ...restaurant,
-            placeDetails,
-          };
-        }
-
-        return restaurant;
+        return await decorateRestaurantWithPlaceDetails(restaurant);
       })
     );
 
@@ -177,6 +137,7 @@ app.get('/place-details/:placeId', async (req, res) => {
   }
 });
 
+// TODO remove
 const formatArticleIdsExclude = (
   articleIdsParam: undefined | string | string[] | ParsedQs | ParsedQs[]
 ) => {
@@ -256,12 +217,57 @@ app.get('/restaurant/:restaurantId', async (req, res, next) => {
 
   try {
     const restaurant = await getRestaurantById(Number(restaurantId));
+    const decoratedRestaurant = await decorateRestaurantWithPlaceDetails(
+      restaurant,
+      ['international_phone_number', 'website', 'opening_hours', 'adr_address']
+    );
 
-    res.json(restaurant);
+    res.json(decoratedRestaurant);
   } catch (error) {
     next(error);
   }
 });
+
+type RestaurantWithDetails = Restaurant & {
+  placeDetails: Partial<PlaceData> | null;
+};
+
+const decorateRestaurantWithPlaceDetails = async (
+  restaurant: Restaurant,
+  extraFields: string[] = []
+): Promise<RestaurantWithDetails> => {
+  if (!restaurant.gPlaceId) {
+    return {
+      ...restaurant,
+      placeDetails: null,
+    };
+  }
+
+  const fields = [
+    'business_status',
+    'geometry/location',
+    'name',
+    'formatted_address',
+    'photos',
+    'url',
+    ...extraFields,
+  ];
+
+  // Price is not part of the base data, it's considered atmosphere data, so it's billed additionally
+  // Only include price_level if we don't already have price
+  if (!restaurant.price) {
+    fields.push('price_level');
+  }
+
+  const google = new Google();
+
+  const placeDetails = await google.getPlaceDetails(
+    restaurant.gPlaceId,
+    fields
+  );
+
+  return { ...restaurant, placeDetails };
+};
 
 app.listen(port, () =>
   console.log(`🚀 Server ready at: http://localhost:${port}`)
