@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  AwardSource,
-  Restaurant,
-  sortRestaurantsByScore,
-} from '../sort-restaurant';
+import { AwardSource, sortRestaurantsByScore } from '../sort-restaurant';
+import { Restaurant } from '../types';
 
 describe('test fuego score', () => {
   const gJelina: Restaurant = {
