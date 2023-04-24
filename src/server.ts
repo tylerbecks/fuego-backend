@@ -14,7 +14,7 @@ import { sortRestaurantsByScore } from './sort-restaurant';
 import { Restaurant } from './types';
 
 const port = process.env.PORT || 3001;
-const RESTAURANTS_PER_PAGE = 10;
+const RESTAURANTS_PER_PAGE = 25;
 
 const app = express();
 app.use(cors());
