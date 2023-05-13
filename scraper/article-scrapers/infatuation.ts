@@ -38,7 +38,21 @@ export default class Infatuation
       restaurants.map(async (r, index) => {
         const name = await this.getName(r);
         const description = await descriptions[index].textContent();
-        return { name, description };
+        const price = await this.getPrice(r, name as string);
+        const website = await this.getsWebsite(r, name as string);
+        const url = await this.getUrl(r, name as string);
+        const shortAddress = await this.getShortAddress(r, name as string);
+        const reservationLink = await this.getReservationLink(r);
+
+        return {
+          name,
+          description,
+          price,
+          website,
+          url,
+          shortAddress,
+          reservationLink,
+        };
       })
     );
   }
@@ -60,5 +74,74 @@ export default class Infatuation
   // the description is a sibling to the restaurant locator
   private async getDescriptions(page: Page) {
     return await page.locator(`${RESTAURANT_CARD_SELECTOR} + p`).all();
+  }
+
+  private async getPrice(restaurantLocator: Locator, name: string) {
+    const priceSection = restaurantLocator.locator('h4');
+    const count = await priceSection.count();
+    if (count === 0) {
+      throw new Error(`Failed to get price for ${name}`);
+    }
+
+    const className = (await priceSection.getAttribute('class')) as string;
+
+    if (className.includes('styles_price1')) {
+      return 1;
+    } else if (className.includes('styles_price2')) {
+      return 2;
+    } else if (className.includes('styles_price3')) {
+      return 3;
+    } else if (className.includes('styles_price4')) {
+      return 4;
+    } else {
+      throw new Error(`Failed to get price for ${name}`);
+    }
+  }
+
+  private async getsWebsite(restaurantLocator: Locator, name: string) {
+    const websiteSection = restaurantLocator.locator('a.chakra-button').first();
+    const website = await websiteSection.getAttribute('href');
+    if (!website) {
+      throw new Error(`Failed to get website for ${name}`);
+    }
+
+    return website;
+  }
+
+  private async getUrl(restaurantLocator: Locator, name: string) {
+    const headingSection = restaurantLocator.locator(RESTAURANT_NAME_SELECTOR);
+    const url = await headingSection.getAttribute('href');
+    if (!url) {
+      throw new Error(`Failed to get url for ${name}`);
+    }
+
+    if (url.startsWith('/')) {
+      return `https://www.theinfatuation.com${url}`;
+    }
+
+    return url;
+  }
+
+  private async getShortAddress(restaurantLocator: Locator, name: string) {
+    const addressSection = restaurantLocator.locator('a.chakra-heading');
+    const address = await addressSection.textContent();
+
+    if (!address) {
+      throw new Error(`Failed to get address for ${name}`);
+    }
+
+    return address;
+  }
+
+  private async getReservationLink(restaurantLocator: Locator) {
+    const reservationTag = restaurantLocator
+      .locator('[data-testid="venue-reserveTableButton"]')
+      .first();
+    const count = await reservationTag.count();
+    if (count === 0) {
+      return null;
+    }
+
+    return await reservationTag.getAttribute('href');
   }
 }

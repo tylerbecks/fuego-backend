@@ -9,4 +9,7 @@ export type ScrapedRestaurant = {
   description: string | null;
   url?: string;
   price?: number | null;
+  website?: string | null;
+  shortAddress?: string | null;
+  reservationLink?: string | null;
 };
