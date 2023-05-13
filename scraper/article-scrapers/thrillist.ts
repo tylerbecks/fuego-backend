@@ -3,7 +3,7 @@ import { Locator, Page } from 'playwright';
 import logger from '../../src/logger';
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
-import { ArticleScraperInterface, GetRestaurants } from './article-scraper';
+import { ArticleScraperInterface } from './article-scraper';
 
 /*
 Notes:
@@ -55,12 +55,8 @@ export default class Thrillist
   }
 }
 
-interface BrowserlessScraper {
-  getRestaurants: GetRestaurants;
-}
-
 // Example: https://www.thrillist.com/eat/boston/best-restaurants-boston
-class Thrillist1 implements BrowserlessScraper {
+class Thrillist1 implements ArticleScraperInterface {
   page;
 
   constructor(page: Page) {
@@ -104,7 +100,7 @@ class Thrillist1 implements BrowserlessScraper {
   }
 }
 
-class Thrillist2 implements BrowserlessScraper {
+class Thrillist2 implements ArticleScraperInterface {
   page;
 
   constructor(page: Page) {
@@ -138,7 +134,7 @@ class Thrillist2 implements BrowserlessScraper {
 }
 
 // Example: https://www.thrillist.com/eat/nation/best-restaurants-in-munich-the-eight-cool-places-to-eat-thrilist-munich
-class Thrillist3 implements BrowserlessScraper {
+class Thrillist3 implements ArticleScraperInterface {
   page;
 
   constructor(page: Page) {

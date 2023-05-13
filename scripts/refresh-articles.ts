@@ -4,26 +4,28 @@ import ArticleScraper from '../scraper/article-scrapers/article-scraper';
 import { GoToPageError } from '../scraper/utils/errors';
 import logger from '../src/logger';
 import prisma from '../src/prisma-client';
+import { ScrapedRestaurant } from '../src/types';
 import { findOrCreateRestaurant } from './utils/db';
 
 type Articles = Prisma.PromiseReturnType<typeof fetchAllArticles>;
 type Article = Articles[number];
 
-type Restaurant = {
+type RestaurantInDb = {
   id: number;
-  name: string;
 };
 
 class ArticleRefresher {
   now;
+  articleFilter;
 
-  constructor() {
+  constructor(articleFilter: string) {
     this.now = new Date();
+    this.articleFilter = articleFilter;
   }
 
   async refreshAll() {
-    const articles = await this.#fetchStaleArticles();
-    logger.info(`Found ${articles.length} stale articles to refresh.`);
+    const articles = await this.fetchStaleArticles();
+    logger.info(`Found ${articles.length} articles to refresh.`);
 
     for (const article of articles) {
       if (article.url.includes('statesman')) {
@@ -33,34 +35,43 @@ class ArticleRefresher {
       logger.info(`
       ========================================================
       `);
-      try {
-        await this.#refreshArticle(article);
-      } catch (error) {
-        if (error instanceof GoToPageError) {
-          console.warn(error.message);
-          continue;
-        }
-      }
-      await this.#removeOutdatedArticleAssociationsWithRestaurants(article);
 
-      await prisma.articlesToRestaurants.findMany({
-        where: {
-          articleId: article.id,
-        },
-      });
+      try {
+        await this.refreshArticle(article);
+      } catch (error) {
+        logger.error(error);
+        if (error instanceof GoToPageError) {
+          logger.error(error.message);
+        }
+
+        continue;
+      }
+
+      await this.removeOutdatedArticleAssociationsWithRestaurants(article);
     }
   }
 
-  async #fetchStaleArticles() {
+  private async fetchStaleArticles() {
+    const articles = await fetchAllArticles();
+
+    // If we pass in an articleFilter, we want to unpdate everything with that filter
+    if (this.articleFilter) {
+      return articles.filter((article) =>
+        article.url.includes(this.articleFilter)
+      );
+    }
+
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    const articles = await fetchAllArticles();
+
+    // Otherwise, just get the stale articles
     return articles.filter((article) => {
       return article.updatedAt === null || article.updatedAt < oneMonthAgo;
     });
   }
 
-  async #refreshArticle(article: Article) {
+  private async refreshArticle(article: Article) {
+    logger.info(`Refreshing article ${article.url}`);
     const scraper = new ArticleScraper(article.url);
     const scrapedRestaurants = await scraper.getRestaurants();
     for (const scrapedRestaurant of scrapedRestaurants) {
@@ -75,11 +86,13 @@ class ArticleRefresher {
       );
 
       if (restaurantDB) {
-        await this.#upsertArticlesToRestauarnts(
+        await this.upsertArticlesToRestauarnts(
           restaurantDB,
-          article,
-          scrapedRestaurant.description
+          scrapedRestaurant,
+          article
         );
+
+        await this.updateRestaurantMetadata(restaurantDB, scrapedRestaurant);
       }
     }
 
@@ -93,14 +106,15 @@ class ArticleRefresher {
     });
   }
 
-  async #upsertArticlesToRestauarnts(
-    restaurant: Restaurant,
-    article: Article,
-    description: string | null
+  private async upsertArticlesToRestauarnts(
+    restaurantInDb: RestaurantInDb,
+    scrapedRestaurant: ScrapedRestaurant,
+    article: Article
   ) {
+    const { description, url } = scrapedRestaurant;
     const existing = await prisma.articlesToRestaurants.findFirst({
       where: {
-        restaurantId: restaurant.id,
+        restaurantId: restaurantInDb.id,
         articleId: article.id,
       },
     });
@@ -109,41 +123,67 @@ class ArticleRefresher {
       logger.info('Inserting into articlesToRestaurants');
       return await prisma.articlesToRestaurants.create({
         data: {
-          restaurantId: restaurant.id,
+          restaurantId: restaurantInDb.id,
           articleId: article.id,
           description,
+          ...(url ? { url } : {}),
           updatedAt: this.now,
         },
       });
     }
 
     if (existing.description && !description) {
-      logger.info('No description, just updating updatedAt...');
+      logger.info(
+        'Description found, but no description scraped. just updating url and updatedAt on articlesToRestaurants'
+      );
       return await prisma.articlesToRestaurants.update({
         where: {
           id: existing.id,
         },
         data: {
-          updatedAt: this.now,
           deletedAt: null,
+          updatedAt: this.now,
+          ...(url ? { url } : {}),
         },
       });
     }
 
-    logger.info('Updating description and updatedAt...');
+    logger.info(
+      'Updating description, url, and updatedAt on articlesToRestaurants'
+    );
     return await prisma.articlesToRestaurants.update({
       where: {
         id: existing.id,
       },
       data: {
-        updatedAt: this.now,
-        description,
         deletedAt: null,
+        description,
+        updatedAt: this.now,
+        ...(url ? { url } : {}),
       },
     });
   }
 
-  async #removeOutdatedArticleAssociationsWithRestaurants(article: Article) {
+  private async updateRestaurantMetadata(
+    restaurantInDb: RestaurantInDb,
+    scrapedRestaurant: ScrapedRestaurant
+  ) {
+    const { price } = scrapedRestaurant;
+    const { id } = restaurantInDb;
+
+    logger.info('Updating restaurant metadata');
+    await prisma.restaurant.update({
+      where: { id },
+      data: {
+        ...(price ? { price } : {}),
+        updatedAt: this.now,
+      },
+    });
+  }
+
+  private async removeOutdatedArticleAssociationsWithRestaurants(
+    article: Article
+  ) {
     logger.info(`Pruning outdated article associations`);
     return await prisma.articlesToRestaurants.updateMany({
       where: {
@@ -179,6 +219,7 @@ const fetchAllArticles = async () =>
   });
 
 (async () => {
-  const refresher = new ArticleRefresher();
+  const articleFilter = 'cntraveler';
+  const refresher = new ArticleRefresher(articleFilter);
   await refresher.refreshAll();
 })();

@@ -1,5 +1,5 @@
 import logger from '../../src/logger';
-import Browser from '../browser';
+import { ScrapedRestaurant } from '../../src/types';
 import CondeNast from './conde-nast';
 import CultureTrip from './culture-trip';
 import Eater from './eater';
@@ -7,17 +7,8 @@ import Infatuation from './infatuation';
 import Thrillist from './thrillist';
 import Timeout from './timeout';
 
-type Restaurant = {
-  name: string | null;
-  description: string | null;
-};
-
-export interface GetRestaurants {
-  (): Promise<Restaurant[]>;
-}
-
-export interface ArticleScraperInterface extends Browser {
-  getRestaurants: GetRestaurants;
+export interface ArticleScraperInterface {
+  getRestaurants: () => Promise<ScrapedRestaurant[]>;
 }
 
 const SCRAPERS = {
@@ -34,7 +25,7 @@ const topLevelDomains = new RegExp(/\.(com|co)$/, 'g');
 const getSecondLevelDomain = (url: string) =>
   url.replace(topLevelDomains, '').split('.').pop();
 
-export default class ArticleScraper {
+export default class ArticleScraper implements ArticleScraperInterface {
   url;
   scraper;
 

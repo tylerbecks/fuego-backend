@@ -2,20 +2,41 @@
 
 ## Helpful commands
 
-Execute an individual `.ts` file without compiling:
+### Execute an individual `.ts` file without compiling
 
-    ```bash
-    npx ts-node-esm my-file.ts
-    ```
+```bash
+npx ts-node-esm my-file.ts
+```
 
-Important: You need to re-run the prisma generate command after every change that's made to your Prisma schema to update the generated Prisma Client code. This runs in postinstall.
+### Debug Playwright Scraper
 
-    ```bash
-    npx prisma generate
-    ```
+```bash
+PWDEBUG=console npm ts-node-esm <path-to-your-script>
+```
 
-To update the schema, first change _schema.prisma_, then run:
+[Docs](https://playwright.dev/docs/debug#browser-developer-tools)
 
-    ```bash
-    npx prisma migrate dev
-    ```
+### Debug node script
+
+Use the terminal in vs code and start a new JavaScript Debug Terminal.
+
+### Sync the schema with thee database
+
+:::note
+Needs to be run if _schema.prisma_ changes.
+:::
+
+```bash
+npx prisma migrate dev
+```
+
+### Sync Prisma schema with generated Prisma Client code
+
+:::note
+Needs to be run if _schema.prisma_ changes.
+This runs automatically in precommit.
+:::
+
+```bash
+npx prisma generate
+```
