@@ -168,7 +168,7 @@ class ArticleRefresher {
     restaurantInDb: RestaurantInDb,
     scrapedRestaurant: ScrapedRestaurant
   ) {
-    const { price } = scrapedRestaurant;
+    const { price, website, shortAddress, reservationLink } = scrapedRestaurant;
     const { id } = restaurantInDb;
 
     logger.info('Updating restaurant metadata');
@@ -176,6 +176,9 @@ class ArticleRefresher {
       where: { id },
       data: {
         ...(price ? { price } : {}),
+        ...(website ? { website } : {}),
+        ...(shortAddress ? { shortAddress } : {}),
+        ...(reservationLink ? { reservationLink } : {}),
         updatedAt: this.now,
       },
     });
@@ -219,7 +222,7 @@ const fetchAllArticles = async () =>
   });
 
 (async () => {
-  const articleFilter = 'cntraveler';
+  const articleFilter = 'infatuation';
   const refresher = new ArticleRefresher(articleFilter);
   await refresher.refreshAll();
 })();

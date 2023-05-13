@@ -53,3 +53,12 @@ export default class ArticleScraper implements ArticleScraperInterface {
 
   // add function to refresh ogdata for title and site_name
 }
+
+// (async () => {
+//   const url =
+//     'https://www.theinfatuation.com/austin/guides/best-new-austin-restaurants-hit-list';
+
+//   const scraper = new ArticleScraper(url);
+//   const restaurants = await scraper.getRestaurants();
+//   console.log(restaurants);
+// })();
