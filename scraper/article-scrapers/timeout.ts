@@ -1,5 +1,6 @@
 import { Locator, Page } from 'playwright';
 
+import logger from '../../src/logger';
 import Browser from '../browser';
 import { GoToPageError } from '../utils/errors';
 import { ArticleScraperInterface } from './article-scraper';
@@ -32,18 +33,26 @@ export default class Timeout
       throw new GoToPageError(this.url);
     }
 
-    const restaurants = await this.#getRestaurantLocators(page);
+    const restaurants = await this.getRestaurantLocators(page);
 
     return await Promise.all(
       restaurants.map(async (r) => {
-        const name = await this.#getName(r);
-        const description = await this.#getDescription(r);
-        return { name, description };
+        const name = await this.getName(r);
+        const description = await this.getDescription(r);
+        const url = await this.getUrl(r, name as string);
+        const website = await this.getWebsite(r, name as string);
+        const price = await this.getPrice(r, name as string);
+        const reservationLink = await this.getReservationLink(
+          r,
+          name as string
+        );
+
+        return { name, description, url, website, price, reservationLink };
       })
     );
   }
 
-  async #getRestaurantLocators(page: Page) {
+  private async getRestaurantLocators(page: Page) {
     const zones = await page.locator('.zone').all();
     const NUM_TILES_IN_MARKET_SECTION = 1;
 
@@ -61,7 +70,7 @@ export default class Timeout
     return [];
   }
 
-  async #getName(restaurantLocator: Locator) {
+  private async getName(restaurantLocator: Locator) {
     const name = await restaurantLocator
       .getByRole('heading', { level: 3 })
       .first()
@@ -70,11 +79,103 @@ export default class Timeout
     return name ? stripNum(name) : null;
   }
 
-  async #getDescription(restaurantLocator: Locator) {
+  private async getDescription(restaurantLocator: Locator) {
     return await restaurantLocator
       .locator('div[class*="_summary_"]')
       .first()
       .textContent();
+  }
+
+  private async getUrl(restaurantLocator: Locator, name: string) {
+    const url = restaurantLocator
+      .locator('div.articleContent')
+      .locator('a[data-testid="tile-link_testID"]')
+      .first();
+
+    const count = await url.count();
+    if (count === 0) {
+      logger.warn(`No url found for ${name}`);
+      return null;
+    }
+
+    const href = await url.getAttribute('href');
+
+    if (!href) {
+      throw new Error(`No url found for ${name}`);
+    }
+
+    if (href.startsWith('/')) {
+      return `https://www.timeout.com${href}`;
+    }
+
+    return href;
+  }
+
+  private async getWebsite(restaurantLocator: Locator, name: string) {
+    const website = restaurantLocator
+      .locator('a[data-testid="tile-link_testID"]')
+      .first();
+
+    const count = await website.count();
+    if (count === 0) {
+      console.warn(`No website found for ${name}`);
+      return null;
+    }
+
+    return await website.getAttribute('href');
+  }
+
+  private async getPrice(restaurantLocator: Locator, name: string) {
+    const priceLocator = restaurantLocator
+      .locator('div[data-testid="price-rating_testID"]')
+      .locator('.sr-only');
+
+    const count = await priceLocator.count();
+    if (count === 0) {
+      return null;
+    }
+
+    const screenReaderText = await priceLocator.first().textContent();
+    if (!screenReaderText) {
+      throw new Error(
+        `Screen reader text should exist if priceLocator is found for ${name}`
+      );
+    }
+
+    logger.info(`Found price ${screenReaderText} for ${name}`);
+
+    if (screenReaderText === 'price 1 of 4') {
+      return 1;
+    } else if (screenReaderText === 'price 2 of 4') {
+      return 2;
+    } else if (screenReaderText === 'price 3 of 4') {
+      return 3;
+    } else if (screenReaderText === 'price 4 of 4') {
+      return 4;
+    } else {
+      throw new Error(`Invalid price found for ${name}`);
+    }
+  }
+
+  private async getReservationLink(restaurantLocator: Locator, name: string) {
+    const reservationLink = restaurantLocator
+      .locator('a[data-testid="buy-now-button_testID"]')
+      .first();
+
+    const count = await reservationLink.count();
+    if (count === 0) {
+      return null;
+    }
+
+    const href = await reservationLink.getAttribute('href');
+    if (!href) {
+      return null;
+    }
+
+    // strip query params
+    const url = href.split('?')[0];
+    logger.info(`Found reservation link ${url} for ${name}`);
+    return url;
   }
 }
 

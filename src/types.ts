@@ -7,7 +7,7 @@ export type Restaurant = Prisma.PromiseReturnType<typeof getRestaurantById>;
 export type ScrapedRestaurant = {
   name: string | null;
   description: string | null;
-  url?: string;
+  url?: string | null;
   price?: number | null;
   website?: string | null;
   shortAddress?: string | null;

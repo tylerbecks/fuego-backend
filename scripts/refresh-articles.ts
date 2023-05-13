@@ -222,7 +222,8 @@ const fetchAllArticles = async () =>
   });
 
 (async () => {
-  const articleFilter = 'infatuation';
+  const articleFilter =
+    'https://www.timeout.com/rome/restaurants/best-restaurants-in-rome';
   const refresher = new ArticleRefresher(articleFilter);
   await refresher.refreshAll();
 })();
