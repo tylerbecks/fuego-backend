@@ -56,7 +56,7 @@ export default class ArticleScraper implements ArticleScraperInterface {
 
 // (async () => {
 //   const url =
-//     'https://www.theinfatuation.com/austin/guides/best-new-austin-restaurants-hit-list';
+//     'https://www.timeout.com/austin/restaurants/best-restaurants-in-austin';
 
 //   const scraper = new ArticleScraper(url);
 //   const restaurants = await scraper.getRestaurants();

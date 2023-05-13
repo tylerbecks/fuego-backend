@@ -142,6 +142,12 @@ export default class Infatuation
       return null;
     }
 
-    return await reservationTag.getAttribute('href');
+    const href = await reservationTag.getAttribute('href');
+    if (!href) {
+      return null;
+    }
+
+    // strip query params
+    return href.split('?')[0];
   }
 }
