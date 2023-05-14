@@ -38,10 +38,10 @@ export default class Infatuation
       restaurants.map(async (r, index) => {
         const name = await this.getName(r);
         const description = await descriptions[index].textContent();
-        const price = await this.getPrice(r, name as string);
-        const website = await this.getsWebsite(r, name as string);
-        const url = await this.getUrl(r, name as string);
-        const shortAddress = await this.getShortAddress(r, name as string);
+        const price = await this.getPrice(r, name);
+        const website = await this.getsWebsite(r, name);
+        const url = await this.getUrl(r, name);
+        const shortAddress = await this.getShortAddress(r, name);
         const reservationLink = await this.getReservationLink(r);
 
         return {
@@ -68,7 +68,12 @@ export default class Infatuation
 
   private async getName(restaurantLocator: Locator) {
     const headingSection = restaurantLocator.locator(RESTAURANT_NAME_SELECTOR);
-    return await headingSection.getByRole('heading').textContent();
+    const name = await headingSection.getByRole('heading').textContent();
+    if (!name) {
+      throw new Error('No name found in infatuation scraper');
+    }
+
+    return name;
   }
 
   // the description is a sibling to the restaurant locator

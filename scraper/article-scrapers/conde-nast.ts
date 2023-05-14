@@ -27,7 +27,7 @@ export default class CondeNast
     try {
       await page.goto(this.url);
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       throw new GoToPageError(this.url);
     }
 
