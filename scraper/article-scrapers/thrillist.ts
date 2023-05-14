@@ -93,7 +93,7 @@ class Thrillist1 implements ArticleScraperInterface {
     try {
       return await restaurantLocator.locator('p').textContent();
     } catch (error) {
-      logger.error(error);
+      console.error(error);
       logger.warn('Could not find description for:', restaurantLocator);
       return null;
     }

@@ -39,7 +39,7 @@ class ArticleRefresher {
       try {
         await this.refreshArticle(article);
       } catch (error) {
-        logger.error(error);
+        console.error(error);
         if (error instanceof GoToPageError) {
           logger.error(error.message);
         }
@@ -168,17 +168,28 @@ class ArticleRefresher {
     restaurantInDb: RestaurantInDb,
     scrapedRestaurant: ScrapedRestaurant
   ) {
-    const { price, website, shortAddress, reservationLink } = scrapedRestaurant;
+    const {
+      instagramLink,
+      longAddress,
+      phone,
+      price,
+      reservationLink,
+      shortAddress,
+      website,
+    } = scrapedRestaurant;
     const { id } = restaurantInDb;
 
     logger.info('Updating restaurant metadata');
     await prisma.restaurant.update({
       where: { id },
       data: {
+        ...(instagramLink ? { instagramLink } : {}),
+        ...(longAddress ? { longAddress } : {}),
+        ...(phone ? { phone } : {}),
         ...(price ? { price } : {}),
-        ...(website ? { website } : {}),
-        ...(shortAddress ? { shortAddress } : {}),
         ...(reservationLink ? { reservationLink } : {}),
+        ...(shortAddress ? { shortAddress } : {}),
+        ...(website ? { website } : {}),
         updatedAt: this.now,
       },
     });
@@ -222,8 +233,7 @@ const fetchAllArticles = async () =>
   });
 
 (async () => {
-  const articleFilter =
-    'https://www.timeout.com/rome/restaurants/best-restaurants-in-rome';
+  const articleFilter = 'eater';
   const refresher = new ArticleRefresher(articleFilter);
   await refresher.refreshAll();
 })();

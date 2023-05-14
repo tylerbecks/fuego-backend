@@ -39,13 +39,10 @@ export default class Timeout
       restaurants.map(async (r) => {
         const name = await this.getName(r);
         const description = await this.getDescription(r);
-        const url = await this.getUrl(r, name as string);
-        const website = await this.getWebsite(r, name as string);
-        const price = await this.getPrice(r, name as string);
-        const reservationLink = await this.getReservationLink(
-          r,
-          name as string
-        );
+        const url = await this.getUrl(r, name);
+        const website = await this.getWebsite(r, name);
+        const price = await this.getPrice(r, name);
+        const reservationLink = await this.getReservationLink(r, name);
 
         return { name, description, url, website, price, reservationLink };
       })
@@ -76,7 +73,11 @@ export default class Timeout
       .first()
       .textContent();
 
-    return name ? stripNum(name) : null;
+    if (!name) {
+      throw new Error('No name found in timeout scrapter');
+    }
+
+    return stripNum(name);
   }
 
   private async getDescription(restaurantLocator: Locator) {
