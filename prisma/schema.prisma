@@ -54,29 +54,30 @@ model City {
 }
 
 model Restaurant {
-  id              Int                     @id @default(autoincrement())
-  createdAt       DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime?               @map("updated_at") @db.Timestamptz(6)
-  deletedAt       DateTime?               @map("deleted_at") @db.Timestamptz(6)
-  chef            String?                 @db.VarChar
-  city            String?                 @db.VarChar
-  cityId          Int?                    @map("city_id")
-  country         String?                 @db.VarChar
-  cuisine         String?                 @db.VarChar
-  gPlaceId        String?                 @unique @map("g_place_id") @db.VarChar
-  instagramLink   String?                 @db.VarChar
-  lat             Float?                  @db.DoublePrecision
-  long            Float?                  @db.DoublePrecision
-  longAddress     String?                 @db.VarChar
-  name            String                  @db.VarChar
-  price           Int?                    @db.Integer
-  phone           String?                 @db.VarChar
-  reservationLink String?                 @db.VarChar
-  shortAddress    String?                 @db.VarChar
-  website         String?                 @db.VarChar
-  articles        ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
-  awards          Award[]
-  cities          City?                   @relation("citiesTorestaurants", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")
+  id               Int                     @id @default(autoincrement())
+  createdAt        DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?               @map("updated_at") @db.Timestamptz(6)
+  deletedAt        DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  chef             String?                 @db.VarChar
+  city             String?                 @db.VarChar
+  cityId           Int?                    @map("city_id")
+  country          String?                 @db.VarChar
+  cuisine          String?                 @db.VarChar
+  gPlaceId         String?                 @unique @map("g_place_id") @db.VarChar
+  instagramLink    String?                 @db.VarChar
+  lat              Float?                  @db.DoublePrecision
+  long             Float?                  @db.DoublePrecision
+  longAddress      String?                 @db.VarChar
+  name             String                  @db.VarChar
+  price            Int?                    @db.Integer
+  phone            String?                 @db.VarChar
+  reservationLink  String?                 @db.VarChar
+  reservationLinks String[]
+  shortAddress     String?                 @db.VarChar
+  website          String?                 @db.VarChar
+  articles         ArticlesToRestaurants[] @relation("articlestorestaurantsTorestaurants")
+  awards           Award[]
+  cities           City?                   @relation("citiesTorestaurants", fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_city_id")
 
   @@map("restaurants")
 }

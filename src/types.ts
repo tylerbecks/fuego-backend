@@ -10,9 +10,11 @@ export type ScrapedRestaurant = {
   instagramLink?: string | null;
   phone?: string | null;
   price?: number | null;
-  reservationLink?: string | null;
+  reservationUrls?: string[];
   shortAddress?: string | null;
   longAddress?: string | null;
   url?: string | null;
   website?: string | null;
+  lat?: number | null;
+  long?: number | null;
 };

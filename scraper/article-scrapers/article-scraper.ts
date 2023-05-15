@@ -55,7 +55,8 @@ export default class ArticleScraper implements ArticleScraperInterface {
 }
 
 // (async () => {
-//   const url = 'https://austin.eater.com/maps/austin-best-restaurants-eater-38';
+//   const url =
+//     'https://www.thrillist.com/eat/nation/best-restaurants-in-munich-the-eight-cool-places-to-eat-thrilist-munich';
 
 //   const scraper = new ArticleScraper(url);
 //   const restaurants = await scraper.getRestaurants();
