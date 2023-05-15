@@ -24,10 +24,16 @@ export default class Thrillist
     this.url = url;
   }
 
-  chooseParser(page: Page) {
-    if (page.locator('button svg.map-icon')) {
+  async chooseParser(page: Page) {
+    const mapIconButtons = page.locator('button svg.map-icon');
+    const countMapIconButtons = await mapIconButtons.count();
+
+    const saveVenueLocators = page.locator('.page-element--save-venue');
+    const countSaveVenueLocators = await saveVenueLocators.count();
+
+    if (countMapIconButtons > 0) {
       return new Thrillist1(page);
-    } else if (page.locator('page-element--save-venue')) {
+    } else if (countSaveVenueLocators > 0) {
       return new Thrillist2(page);
     }
 
@@ -48,7 +54,7 @@ export default class Thrillist
       throw new GoToPageError(this.url);
     }
 
-    const parser = this.chooseParser(page);
+    const parser = await this.chooseParser(page);
 
     const restaurants = await parser.getRestaurants();
     return restaurants;
@@ -65,18 +71,45 @@ class Thrillist1 implements ArticleScraperInterface {
   }
 
   async getRestaurants() {
-    const restaurants = await this.#getRestaurantLocators();
+    const restaurants = await this.getRestaurantLocators();
+
+    const scriptTagMetadata = await this.getScriptTagMetadata(this.page);
 
     return await Promise.all(
       restaurants.map(async (r) => {
-        const name = await this.#getName(r);
-        const description = await this.#getDescription(r);
-        return { name, description };
+        const name = await this.getName(r);
+        const description = await this.getDescription(r);
+        const price = await this.getPrice(r, name);
+        const url = await this.getUrl(r, scriptTagMetadata, name);
+        const { lat, long } = await this.getLatLong(r, scriptTagMetadata, name);
+        const reservationUrls = await this.getReservationUrls(r, name);
+
+        return { name, description, price, url, lat, long, reservationUrls };
       })
     );
   }
 
-  async #getRestaurantLocators() {
+  private async getScriptTagMetadata(page: Page) {
+    // The following script tag contains a payload of json for the page with metadata for each resaturant
+    const scriptTag = page.locator('script[type="application/ld+json"]');
+    const count = await scriptTag.count();
+    if (count === 0) {
+      throw new Error('No script tag found');
+    }
+
+    const scriptTagContent = await scriptTag.textContent();
+    const pageMetadata = scriptTagContent
+      ? (JSON.parse(scriptTagContent) as ScriptTagMetadata)
+      : null;
+
+    if (!pageMetadata) {
+      throw new Error(`Issue parsing script tag content`);
+    }
+
+    return pageMetadata;
+  }
+
+  private async getRestaurantLocators() {
     // There are doubles of each restaurant on the page, one for the article, one for the map. So limit to the article.
     return await this.page
       .getByRole('article')
@@ -85,11 +118,16 @@ class Thrillist1 implements ArticleScraperInterface {
       .all();
   }
 
-  async #getName(restaurantLocator: Locator) {
-    return await restaurantLocator.getByRole('heading').textContent();
+  private async getName(restaurantLocator: Locator) {
+    const name = await restaurantLocator.getByRole('heading').textContent();
+    if (!name) {
+      throw new Error('Could not find name');
+    }
+
+    return name;
   }
 
-  async #getDescription(restaurantLocator: Locator) {
+  private async getDescription(restaurantLocator: Locator) {
     try {
       return await restaurantLocator.locator('p').textContent();
     } catch (error) {
@@ -98,8 +136,136 @@ class Thrillist1 implements ArticleScraperInterface {
       return null;
     }
   }
+
+  private async getPrice(restaurantLocator: Locator, name: string) {
+    const solidDollarSigns = restaurantLocator.locator('.jNYvDy');
+    const count = await solidDollarSigns.count();
+    if (count === 0) {
+      return null;
+    }
+
+    if (count > 4) {
+      throw new Error(`Unexpected number of dollar signs for: ${name}`);
+    }
+
+    return count;
+  }
+
+  private async getUrl(
+    restaurantLocator: Locator,
+    scriptTagMetadata: ScriptTagMetadata,
+    restaurantName: string
+  ) {
+    const itemsList = scriptTagMetadata[1];
+    const nameLocator = restaurantLocator.locator(
+      'a[data-vars-ga-action="venue link"]'
+    );
+    // For some reason, the names in this list don't always matche the names on the page.
+    // Example: "Bub & Grandma’s" is on the page, "Bub and Grandma’s Bread" is in the script tag data
+    const nameInData = await nameLocator.getAttribute('data-vars-ga-label');
+    const restaurantMetadata = itemsList.itemListElement.find(
+      (item) => item.item.name === nameInData
+    );
+
+    if (!restaurantMetadata) {
+      throw new Error(`Could not find metadata for: ${restaurantName}`);
+    }
+
+    const url = restaurantMetadata.item.url;
+
+    if (url.startsWith('/')) {
+      return `https://www.thrillist.com${url}`;
+    }
+
+    return url;
+  }
+
+  private async getLatLong(
+    restaurantLocator: Locator,
+    scriptTagMetadata: ScriptTagMetadata,
+    restaurantName: string
+  ) {
+    const itemsList = scriptTagMetadata[1];
+    const nameLocator = restaurantLocator.locator(
+      'a[data-vars-ga-action="venue link"]'
+    );
+    const nameInData = await nameLocator.getAttribute('data-vars-ga-label');
+    const restaurantMetadata = itemsList.itemListElement.find(
+      (item) => item.item.name === nameInData
+    );
+    if (!restaurantMetadata) {
+      throw new Error(`Could not find metadata for: ${restaurantName}`);
+    }
+
+    const latLong = restaurantMetadata.item.geo;
+    if (!latLong) {
+      throw new Error(`Could not find lat/long for: ${restaurantName}`);
+    }
+
+    return {
+      lat: Number(latLong.latitude),
+      long: Number(latLong.longitude),
+    };
+  }
+
+  private async getReservationUrls(restaurantLocator: Locator, name: string) {
+    const affiliateLinks = await this.getAffiliateLinks(
+      restaurantLocator,
+      name
+    );
+
+    const bookingLinks = await this.getBookingLinks(restaurantLocator, name);
+
+    return [...affiliateLinks, ...bookingLinks];
+  }
+
+  private async getAffiliateLinks(restaurantLocator: Locator, name: string) {
+    const reservationLinksLocator = restaurantLocator
+      .locator('div.venue-affiliate-button-section')
+      .locator('a');
+
+    const count = await reservationLinksLocator.count();
+    if (count === 0) {
+      return [];
+    }
+
+    const reservationLinks = await reservationLinksLocator.all();
+
+    const urls = await Promise.all(
+      reservationLinks.map(async (link) => {
+        const url = await link.getAttribute('href');
+        if (!url) {
+          throw new Error(`Could not find url for: ${name}`);
+        }
+
+        return url;
+      })
+    );
+
+    return urls;
+  }
+
+  private async getBookingLinks(restaurantLocator: Locator, name: string) {
+    // If strong exists, get all <a> tags that come after it
+    const reservationLinks = await restaurantLocator
+      .locator('p')
+      .locator(':text("How to book") ~ a')
+      .all();
+
+    return await Promise.all(
+      reservationLinks.map(async (link) => {
+        const url = await link.getAttribute('href');
+        if (!url) {
+          throw new Error(`Could not find url for: ${name}`);
+        }
+
+        return url;
+      })
+    );
+  }
 }
 
+// Example: https://www.thrillist.com/eat/paris/best-restaurants-paris
 class Thrillist2 implements ArticleScraperInterface {
   page;
 
@@ -109,27 +275,42 @@ class Thrillist2 implements ArticleScraperInterface {
   }
 
   async getRestaurants() {
-    const restaurants = await this.#getRestaurantLocators();
+    const restaurants = await this.getRestaurantLocators();
 
     return await Promise.all(
       restaurants.map(async (r) => {
-        const name = await this.#getName(r);
-        const description = await this.#getDescription(r);
-        return { name, description };
+        const name = await this.getName(r);
+        const description = await this.getDescription(r);
+        const website = await this.getWebsite(r);
+
+        return { name, description, website };
       })
     );
   }
 
-  async #getRestaurantLocators() {
+  private async getRestaurantLocators() {
     return await this.page.locator('div.page-element--save-venue').all();
   }
 
-  async #getName(restaurantLocator: Locator) {
+  private async getName(restaurantLocator: Locator) {
     return await restaurantLocator.getByRole('heading').textContent();
   }
 
-  async #getDescription(restaurantLocator: Locator) {
+  private async getDescription(restaurantLocator: Locator) {
     return await restaurantLocator.locator('p').textContent();
+  }
+
+  private async getWebsite(restaurantLocator: Locator) {
+    const url = await restaurantLocator
+      .getByRole('heading')
+      .locator('a')
+      .getAttribute('href');
+
+    if (!url) {
+      throw new Error('Could not find url');
+    }
+
+    return url;
   }
 }
 
@@ -143,25 +324,27 @@ class Thrillist3 implements ArticleScraperInterface {
   }
 
   async getRestaurants() {
-    const restaurants = await this.#getRestaurantLocators();
+    const restaurants = await this.getRestaurantLocators();
 
     return await Promise.all(
       restaurants.map(async (r) => {
-        const name = await this.#getName(r);
-        const description = await this.#getDescription(r);
-        return { name, description };
+        const name = await this.getName(r);
+        const description = await this.getDescription(r);
+        const url = await this.getUrl(r);
+
+        return { name, description, url };
       })
     );
   }
 
-  async #getRestaurantLocators() {
+  private async getRestaurantLocators() {
     return await this.page
       .locator('figure + div')
       .filter({ has: this.page.locator('p > strong') })
       .all();
   }
 
-  async #getName(restaurantLocator: Locator) {
+  private async getName(restaurantLocator: Locator) {
     const name = await restaurantLocator
       .locator('p')
       .first()
@@ -174,17 +357,129 @@ class Thrillist3 implements ArticleScraperInterface {
       return null;
     }
 
-    return this.#stripNumber(name);
+    return this.stripNumber(name);
   }
 
   // Removes numbers like "1) " from "1) Restaurant Name"
-  #stripNumber(name: string) {
+  private stripNumber(name: string) {
     return name.replace(/^\d+\) /, '');
   }
 
-  async #getDescription(restaurantLocator: Locator) {
-    return await restaurantLocator
-      .locator('p > br  + ::target-text')
+  private async getDescription(restaurantLocator: Locator) {
+    const strongText = await restaurantLocator
+      .locator('p strong')
       .textContent();
+
+    if (!strongText) {
+      throw new Error('Could not find strong text');
+    }
+
+    const allText = await restaurantLocator.locator('p').textContent();
+
+    if (!allText) {
+      throw new Error('Could not find all text');
+    }
+
+    // Remove the strong text from allText
+    return allText.replace(strongText, '');
+  }
+
+  private async getUrl(restaurantLocator: Locator) {
+    const url = await restaurantLocator
+      .locator('p strong a')
+      .getAttribute('href');
+
+    if (!url) {
+      throw new Error('Could not find url');
+    }
+
+    return url;
   }
 }
+
+type GeoCoordinates = {
+  '@type': string;
+  latitude: string;
+  longitude: string;
+};
+
+type Restaurant = {
+  '@type': string;
+  geo: GeoCoordinates;
+  image: string;
+  name: string;
+  url: string;
+};
+
+type ListItem = {
+  '@type': string;
+  item: Restaurant;
+  name?: string;
+  position: number;
+};
+
+type BreadcrumbListItem = {
+  '@type': string;
+  item: string;
+  name?: string;
+  position: number;
+};
+
+type BreadcrumbList = {
+  '@type': string;
+  '@context': string;
+  itemListElement: BreadcrumbListItem[];
+};
+
+type ItemList = {
+  '@type': string;
+  '@context': string;
+  numberOfItems: number;
+  name: string;
+  itemListOrder: string;
+  itemListElement: ListItem[];
+};
+
+type ImageObject = {
+  '@type': string;
+  width: string;
+  url: string;
+  height: string;
+};
+
+type Person = {
+  '@type': string;
+  name: string;
+};
+
+type OrganizationLogo = {
+  '@type': string;
+  width: number;
+  url: string;
+  height: number;
+};
+
+type Organization = {
+  '@type': string;
+  name: string;
+  logo: OrganizationLogo;
+};
+
+type WebPage = {
+  '@type': string;
+  '@id': string;
+};
+
+type NewsArticle = {
+  '@type': string;
+  '@context': string;
+  datePublished: string;
+  image: ImageObject;
+  author: Person;
+  publisher: Organization;
+  dateModified: string;
+  mainEntityOfPage: WebPage;
+  headline: string;
+};
+
+type ScriptTagMetadata = [BreadcrumbList, ItemList, NewsArticle];

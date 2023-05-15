@@ -12,6 +12,7 @@ type Article = Articles[number];
 
 type RestaurantInDb = {
   id: number;
+  reservationLinks: string[];
 };
 
 class ArticleRefresher {
@@ -173,9 +174,10 @@ class ArticleRefresher {
       longAddress,
       phone,
       price,
-      reservationLink,
       shortAddress,
       website,
+      lat,
+      long,
     } = scrapedRestaurant;
     const { id } = restaurantInDb;
 
@@ -187,12 +189,47 @@ class ArticleRefresher {
         ...(longAddress ? { longAddress } : {}),
         ...(phone ? { phone } : {}),
         ...(price ? { price } : {}),
-        ...(reservationLink ? { reservationLink } : {}),
         ...(shortAddress ? { shortAddress } : {}),
         ...(website ? { website } : {}),
+        ...(lat ? { lat } : {}),
+        ...(long ? { long } : {}),
         updatedAt: this.now,
       },
     });
+
+    if (
+      scrapedRestaurant.reservationUrls &&
+      scrapedRestaurant.reservationUrls.length > 0
+    ) {
+      await this.updateReservationUrls(
+        restaurantInDb,
+        scrapedRestaurant.reservationUrls
+      );
+    }
+  }
+
+  async updateReservationUrls(
+    restaurantInDb: RestaurantInDb,
+    scrapedReservationUrls: string[]
+  ) {
+    // Only push links that aren't already in the db array
+    const newReservationUrls = scrapedReservationUrls.filter(
+      (link) => !restaurantInDb.reservationLinks.includes(link)
+    );
+
+    logger.info(`Pushing ${newReservationUrls.length} new reservation links`);
+    for (const link of newReservationUrls) {
+      await prisma.restaurant.update({
+        where: {
+          id: restaurantInDb.id,
+        },
+        data: {
+          reservationLinks: {
+            push: link,
+          },
+        },
+      });
+    }
   }
 
   private async removeOutdatedArticleAssociationsWithRestaurants(
@@ -233,7 +270,8 @@ const fetchAllArticles = async () =>
   });
 
 (async () => {
-  const articleFilter = 'eater';
+  const articleFilter =
+    'https://www.thrillist.com/eat/paris/best-restaurants-paris';
   const refresher = new ArticleRefresher(articleFilter);
   await refresher.refreshAll();
 })();
