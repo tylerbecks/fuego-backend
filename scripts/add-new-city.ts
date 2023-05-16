@@ -39,13 +39,24 @@ const main = async (
   await matchCityWithAI(
     `${newCity.city}, ${newCity.country}`,
     citiesInCountry,
-    (neighborhood) => {
+    async (neighborhood) => {
       logger.info(`Updating ${neighborhood.city} in city-cache.db`);
 
+      // Update cityCache
       cityCache.run(
         'UPDATE cities SET cityId = ?, cityFromDb = ? WHERE city = ? AND country = ?',
         [newCity.id, newCity.city, neighborhood.city, neighborhood.country]
       );
+
+      // Find all restaurants in restaurants table that match the neighborhood
+      await prisma.restaurant.updateMany({
+        where: {
+          city: neighborhood.city,
+        },
+        data: {
+          cityId: newCity.id,
+        },
+      });
     }
   );
 
@@ -100,7 +111,7 @@ const getCitiesInCountry = (
     'https://www.timeout.com/buenos-aires/restaurants/best-restaurants-in-buenos-aires',
     'https://theculturetrip.com/south-america/argentina/articles/beyond-the-steakhouse-ten-of-the-best-restaurants-in-buenos-aires/',
   ];
-  const city = 'Buenos Aires';
+  const city = 'buenos aires';
   const country = 'ar';
   await main(urls, city, country);
 })();
