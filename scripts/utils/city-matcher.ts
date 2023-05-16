@@ -7,13 +7,13 @@ import askGPT from './open-ai';
 
 verbose();
 
-const cacheFilePath = path.join(__dirname, 'city-cache.db');
+const cityCacheFilePath = path.join(__dirname, 'city-cache.db');
 
 type City = { id: number; city: string; country: string | null };
 
-type CachedCity = {
+export type CachedCity = {
   city: string;
-  country: string | null;
+  country: string;
   cityId: number | null;
   cityFromDb: string | null;
 };
@@ -22,7 +22,7 @@ type CachedCity = {
 // If a city page was added since the last run, some of these neighborhoods might not be false
 export default class CityNameMatcher {
   citiesFromDB: City[] | undefined;
-  cache = new Database(cacheFilePath);
+  cache = new Database(cityCacheFilePath);
   existingCountries = new Set(['ch', 'de', 'es', 'fr', 'gb', 'it', 'jp', 'us']);
 
   async loadAllCities() {
@@ -136,17 +136,17 @@ export default class CityNameMatcher {
     const citiesInCountry = this.citiesFromDB.filter(
       (row) => row.country === country
     );
-    // Try to use open AI to determine if city is a subburb of a city in the database
-    for (const city of citiesInCountry) {
-      // if you don't change new york to new york city, open ai will think you're asking if it's in new york state
-      const cityNameFromDB = getCorrectCityName(city.city);
-      const prompt = `Is the city ${citySearchStr} in ${cityNameFromDB}? Just return yes or no.`;
-      const response = await askGPT(prompt);
-      if (response.match(/yes/i)) {
-        logger.info(`✅ Found city match! Caching and returning ${city.city}`);
+
+    const city = await matchCityWithAI(
+      citySearchStr,
+      citiesInCountry,
+      (city) => {
         this.saveToCache(citySearchStr, country, city.id, city.city);
-        return city;
       }
+    );
+
+    if (city) {
+      return city;
     }
 
     this.saveToCache(citySearchStr, country, null, null);
@@ -234,6 +234,30 @@ export default class CityNameMatcher {
   }
 }
 
+interface CityWithCity {
+  city: string;
+  [key: string]: unknown;
+}
+
+export const matchCityWithAI = async <C extends CityWithCity>(
+  cityToMatch: string,
+  citiesInCountry: Array<C>,
+  onMatch: (city: C) => void | PromiseLike<void>
+) => {
+  // Try to use open AI to determine if city is a subburb of a city in the database
+  for (const city of citiesInCountry) {
+    const cityNameFromDB = getCorrectCityName(city.city);
+    const prompt = `Is the city ${cityToMatch} in ${cityNameFromDB}? Just return yes or no.`;
+    const response = await askGPT(prompt);
+    if (response.match(/yes/i)) {
+      logger.info(`✅ Found city match! Caching and returning ${city.city}`);
+      await Promise.resolve(onMatch(city));
+      return city;
+    }
+  }
+};
+
+// if you don't change new york to new york city, open ai will think you're asking if it's in new york state
 const getCorrectCityName = (cityName: string) => {
   if (cityName === 'new york') {
     return 'new york City';
