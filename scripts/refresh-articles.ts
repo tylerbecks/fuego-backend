@@ -15,11 +15,11 @@ type RestaurantInDb = {
   reservationLinks: string[];
 };
 
-class ArticleRefresher {
+export default class ArticleRefresher {
   now;
   articleFilter;
 
-  constructor(articleFilter: string) {
+  constructor(articleFilter?: string) {
     this.now = new Date();
     this.articleFilter = articleFilter;
   }
@@ -58,7 +58,7 @@ class ArticleRefresher {
     // If we pass in an articleFilter, we want to unpdate everything with that filter
     if (this.articleFilter) {
       return articles.filter((article) =>
-        article.url.includes(this.articleFilter)
+        article.url.includes(this.articleFilter as string)
       );
     }
 
@@ -71,12 +71,13 @@ class ArticleRefresher {
     });
   }
 
-  private async refreshArticle(article: Article) {
+  async refreshArticle(article: Article) {
     logger.info(`Refreshing article ${article.url}`);
     const scraper = new ArticleScraper(article.url);
     const scrapedRestaurants = await scraper.getRestaurants();
     for (const scrapedRestaurant of scrapedRestaurants) {
       logger.info('');
+      // TODO remove this, name should always exist. Fix this in the scrapers
       if (!scrapedRestaurant.name) {
         continue;
       }
