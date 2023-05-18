@@ -101,10 +101,12 @@ app.get('/city/:city/restaurants', async (req, res, next) => {
 
 app.get('/photo/:photoReference', async (req, res) => {
   const { photoReference } = req.params;
+  const { maxwidth } = req.query;
+  const maxwidthNum = maxwidth ? Number(maxwidth) : undefined;
 
   try {
     const google = new Google();
-    const photoStream = await google.getPhoto(photoReference);
+    const photoStream = await google.getPhoto(photoReference, maxwidthNum);
     res.setHeader('Content-Type', 'image/jpeg');
     photoStream.pipe(res);
   } catch (error) {

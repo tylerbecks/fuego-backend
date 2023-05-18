@@ -80,7 +80,7 @@ export default class Google {
     }
   }
 
-  async getPhoto(photoReference: string): Promise<Readable> {
+  async getPhoto(photoReference: string, maxwidth = 400): Promise<Readable> {
     if (!process.env.GOOGLE_API_KEY) {
       throw new Error('GOOGLE_API_KEY env variable not set');
     }
@@ -90,7 +90,7 @@ export default class Google {
     try {
       const response = await this.client.placePhoto({
         params: {
-          maxwidth: 400,
+          maxwidth,
           photoreference: photoReference,
           key: process.env.GOOGLE_API_KEY,
         },
